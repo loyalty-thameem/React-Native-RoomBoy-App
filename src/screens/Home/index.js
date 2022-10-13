@@ -4,10 +4,9 @@ import DocumentPicker, { types } from 'react-native-document-picker';
 import DatePicker from 'react-native-date-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DataTable } from 'react-native-paper';
-// import RNPickerSelect from "react-native-picker-select";
 import { Picker } from '@react-native-picker/picker';
 const HomeScreen = () => {
-    //file upload
+    //FILE UPLOAD
     const [fileResponse, setFileResponse] = React.useState([]);
     // console.log('fileresponse',fileResponse)
     const handleDocumentSelection = React.useCallback(async () => {
@@ -28,7 +27,7 @@ const HomeScreen = () => {
             console.warn(err);
         }
     }, []);
-    // date
+    // DATE
     const [date, setDate] = React.useState(new Date())
     console.log('date', date);
     const [open, setOpen] = React.useState(false)
@@ -67,9 +66,7 @@ const HomeScreen = () => {
     const [roomNo1, setRoomNo1] = React.useState('');
     console.log('ADD ROOM STATE OF ROOMNO1', roomNo1);
     const [noOfPerson, setNoOfPerson] = React.useState('');
-    //DROPDOWN TEXTINPU...
-    // const [language, setLanguage] = React.useState("");
-    //
+    //DROPDOWN SELECT PICKER...
     const [selectedRoomNo, setSelectedRoomNo] = React.useState();
     console.log('selectedRoomNo', selectedRoomNo)
 
@@ -124,7 +121,7 @@ const HomeScreen = () => {
         'Advanced_amount': advancedAmount,
         'Date': date
     };
-    console.log(value)
+    console.log("value",value);
 
     const storeUser = async () => {
         try {
@@ -151,7 +148,11 @@ const HomeScreen = () => {
             Alert.alert('Thank you');
             storeRoomUser();
             getRoom();
-
+            setNoOfPerson('');
+            setRoomNo1('');
+            setAddPerson(true);
+            setAddRoom(false);
+            setFocus({ style7: false })
         }
         else {
             Alert.alert('Invalid Details')
@@ -164,6 +165,7 @@ const HomeScreen = () => {
         // noOfPerson
     }
     console.log('ValueRoom', valueRoom);
+
     const storeRoomUser = async () => {
         try {
             await AsyncStorage.setItem('valueRoom', JSON.stringify(valueRoom));
@@ -172,6 +174,7 @@ const HomeScreen = () => {
             console.log("Error", error);
         }
     }
+
     //LOCALSTORAGE FOR ADD ROOM TO ADD PERSON DETAILS IN GET DATA...
     const [getData1, setGetData1] = React.useState([]);
     console.log('getData1', getData1);
@@ -185,11 +188,10 @@ const HomeScreen = () => {
             console.log('Error', error)
         }
     }
+
     //LOCALSTORAGE FOR VIEW DETAILS IN GET DATA...
     const [getData, setGetData] = React.useState([]);
     // console.log('getData', getData);
-    // console.log('getData Object.keys', Object.keys(getData));
-    // console.log('getData Object.values', Object.values(getData));
     const getUser = async () => {
         try {
             const savedUser = await AsyncStorage.getItem('user');
@@ -202,18 +204,17 @@ const HomeScreen = () => {
             console.log('Error', error);
         }
     }
-    
+
     React.useEffect(() => {
         getUser();
         getRoom();
-    }, [])
+    }, []);
+
     const [userData, setUserData] = React.useState([]);
     const dataRetrieve = [];
     dataRetrieve.push(userData);
     console.log("userData", userData);
     console.log("dataRetrieve", dataRetrieve);
-    // console.log("userData Object.keys", Object.keys(userData));
-    // console.log("userData Object.values", Object.values(userData));
 
     //ROOM
     const [roomNoData, setRoomNoData] = React.useState([]);
@@ -228,6 +229,7 @@ const HomeScreen = () => {
         element += roomDataRetrieve[index].Room_no;
     }
     console.log('element', element);
+
     React.useEffect(() => {
         //ROOM NO  
         const roomNo = getData1.map((item, index) => {
@@ -242,21 +244,10 @@ const HomeScreen = () => {
     React.useEffect(() => {
         const user = getData.map((item, index) => {
             console.log("item ADD PERSON", Object.keys(item));
-            // console.log("item keys", Object.keys(item));
-            // console.log("item values", Object.values(item));
             setUserData(item)
         });
         console.log('User retrieve', user);
-        // //ROOM NO  
-        // const roomNo = getData1.map((item, index) => {
-        //     console.log('roomNo item', Object.values(item))
-        //     setRoomNoData(item);
-        // });
-        // console.log('Room No', roomNo);
-        // return;
     }, [getData]);
-
-    //
 
     //FLATLIST DATE
     const renderItem = ({ item }) => {
@@ -264,14 +255,6 @@ const HomeScreen = () => {
         // console.log('item Object.keys(item)[0] flatlist', JSON.stringify(customeDate.getDate()));
 
         return (
-            // <View style={styles.tableContainer}>
-            //     <View style={styles.tableHeader}>
-            //         <Text style={styles.tableTitle}>{Object.keys(item)}</Text>
-            //     </View>
-            //     <View style={styles.tableDataCell}>
-            //         <Text style={styles.tableDataCellText}>{Object.values(item)}</Text>
-            //     </View>
-            // </View>
             <>
                 {
                     item.length !== 0 ?
@@ -353,12 +336,12 @@ const HomeScreen = () => {
                         setAddRoom(false)
                         setViewDetails(true)
                         setAddPerson(false)
-
                     }}
                 >
                     <Text style={styles.viewDetailsText}>{"View Details"}</Text>
                 </TouchableOpacity>
             </View>
+
             {/* //CONDTIONAL TO RETIEVE DATA FROM (ADD PERSON)... */}
             {
                 addPeson &&
@@ -388,18 +371,6 @@ const HomeScreen = () => {
                         </View>
                         {/* <View style={customStyle2}> */}
                         <View style={styles.addPersonRoomNoTextInputContainer}>
-
-                            {/* <RNPickerSelect
-                         onValueChange={(value) => console.log(value)}
-                        items={[
-                            { label: "1", value: "1" },
-                            { label: "2", value: "2" },
-                            { label: "3", value: "3" },
-                            { label: "4", value: "4" },
-                            { label: "5", value: "5" },
-                            { label: "6", value: "6" },
-                        ]}
-                    /> */}
                             <Picker
                                 selectedValue={selectedRoomNo}
                                 style={styles.addPersonRoomNoInputTextPicker}
@@ -467,7 +438,7 @@ const HomeScreen = () => {
                                 }}
                                 onFocus={() => setFocus({ style4: !false })}
                                 style={styles.addressTextInput}
-                            // multilineggggg
+                            // multiline
                             />
                         </View>
                     </View>
@@ -505,7 +476,6 @@ const HomeScreen = () => {
                                 />
                             </TouchableOpacity>
                         </View>
-                        {/* <Button title="Select 📑" onPress={handleDocumentSelection} /> */}
                     </View>
 
                     <View style={styles.advancedAmountContainer}>
@@ -527,6 +497,7 @@ const HomeScreen = () => {
                             />
                         </View>
                     </View>
+
                     {/* date */}
                     <DatePicker
                         modal
@@ -541,7 +512,6 @@ const HomeScreen = () => {
                         }}
                     />
                     <View style={styles.dateContainer}>
-                        {/* <Button title="Open" onPress={() => setOpen(true)} /> */}
                         <View style={styles.dateLabelContainer}>
                             <Text style={styles.dateLabelText}>{"Date"}</Text>
                         </View>
@@ -549,14 +519,10 @@ const HomeScreen = () => {
                             onPress={() => setOpen(true)}
                         >
                             <Text style={styles.textLabelText}>{JSON.stringify((date.getDate()) + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()).slice(1, -1)}</Text>
-                            {/* <TouchableOpacity
-                            onPress={() => setOpen(true)}
-                        > */}
                             <Image
                                 source={require('../../assets/images/datepicker_image.png')}
                                 style={styles.datePickerImage}
                             />
-                            {/* </TouchableOpacity> */}
                         </TouchableOpacity>
                     </View>
                     <TouchableOpacity style={styles.addButton}
@@ -569,6 +535,7 @@ const HomeScreen = () => {
                     </TouchableOpacity>
                 </View>
             }
+
             {/* ADD ROOM COMPONENT... */}
             {
                 addRoom &&
@@ -620,6 +587,7 @@ const HomeScreen = () => {
                     </TouchableOpacity>
                 </View>
             }
+
             {/* VIEW DETAILS... */}
             {
                 viewDetails &&
@@ -642,13 +610,11 @@ export default HomeScreen
 
 const styles = StyleSheet.create({
     container: {
-        // backgroundColor: 'red',
         backgroundColor: '#FFFFFF',
         flex: 1,
     },
     headerContainer: {
         flex: 0.1,
-        // backgroundColor: 'green',
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
@@ -660,7 +626,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,
-
     },
     addPersonText: {
         fontFamily: 'Rubik',
@@ -685,7 +650,6 @@ const styles = StyleSheet.create({
         lineHeight: 17,
         color: '#F3F3F3',
         fontSize: 14,
-
     },
     viewDetailsbutton: {
         backgroundColor: '#DE3905',
@@ -702,20 +666,15 @@ const styles = StyleSheet.create({
         lineHeight: 17,
         color: '#F3F3F3',
         fontSize: 14,
-
     },
     mainContainer: {
         backgroundColor: '#FFFFFF',
-        // backgroundColor: 'red',
         flex: 0.9,
     },
     nameContainer: {
-        // backgroundColor: 'yellow',
-        // marginVertical: 5,
     },
     nameLabelTextContainer: {
         marginHorizontal: 20,
-        // backgroundColor: 'red'
     },
     nameLabelText: {
         fontfamily: 'Rubik',
@@ -750,16 +709,13 @@ const styles = StyleSheet.create({
     //======
     mainRoomContainer: {
         backgroundColor: '#FFFFFF',
-        // backgroundColor: 'red',
         flex: 0.9,
     },
     roomNoContainer: {
-        // backgroundColor: 'yellow',
         marginVertical: 5,
     },
     roomNoLabelTextContainer: {
         marginHorizontal: 20,
-        // backgroundColor: 'red'
     },
     roomNoLabelText: {
         fontfamily: 'Rubik',
@@ -775,13 +731,10 @@ const styles = StyleSheet.create({
     },
     ///=====
     rollNoContainer: {
-        // backgroundColor: 'purple',
         marginVertical: 5,
-
     },
     rollNoLabelContainer: {
         marginHorizontal: 20,
-        // backgroundColor: 'red'
     },
     rollNoLabelText: {
         fontfamily: 'Rubik',
@@ -801,7 +754,6 @@ const styles = StyleSheet.create({
     },
     rollNoInputText: {
         paddingLeft: 15,
-
     },
     roomNoTextInputContainer: {
         backgroundColor: '#F3F3F3',
@@ -811,14 +763,13 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         height: 40,
     },
+
     //ADD PERSON ROOM 
     addPersonRoomNoContainer: {
-        // backgroundColor: 'yellow',
         marginVertical: 5,
     },
     addPersonRoomNoLabelContainer: {
         marginHorizontal: 20,
-        // backgroundColor: 'red',
     },
     addPersonRoomNoLabelText: {
         fontfamily: 'Rubik',
@@ -837,24 +788,16 @@ const styles = StyleSheet.create({
         height: 40,
     },
     addPersonRoomNoInputTextPicker: {
-        // backgroundColor:'red',
         position: 'relative',
         top: -5
-
     },
     //
     rollNoInputTextPicker: {
-        // backgroundColor: 'green',
-        // paddingBottom:10
-
     },
     contactContainer: {
-        // backgroundColor: 'yellow',
-
     },
     contactLabelContainer: {
         marginHorizontal: 20,
-        // backgroundColor: 'red'
     },
     contactLabelText: {
         fontfamily: 'Rubik',
@@ -877,12 +820,9 @@ const styles = StyleSheet.create({
 
     },
     addressContainer: {
-        // backgroundColor: 'blue',
-
     },
     addressLabelContainer: {
         marginHorizontal: 20,
-        // backgroundColor: 'red'
     },
     addressLabelText: {
         fontfamily: 'Rubik',
@@ -902,22 +842,15 @@ const styles = StyleSheet.create({
     },
     addressTextInput: {
         paddingLeft: 15,
-
     },
     showDateContainer: {
-        // backgroundColor: 'yellow',
-
     },
     uri: {
-
     },
     IdProofContainer: {
-        // backgroundColor: 'yellow',
-
     },
     IdProofLabelContainer: {
         marginHorizontal: 20,
-        // backgroundColor: 'red'
     },
     IdProofLabelText: {
         fontfamily: 'Rubik',
@@ -937,7 +870,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         height: 30,
         marginBottom: 5,
-
     },
     chooseFileLabelText: {
         fontfamily: 'Rubik',
@@ -951,15 +883,11 @@ const styles = StyleSheet.create({
     fileUploadImage: {
         width: 20,
         height: 20,
-
     },
     advancedAmountContainer: {
-        // backgroundColor: 'yellow',
-
     },
     advancedAmountLabelContainer: {
         marginHorizontal: 20,
-        // backgroundColor: 'red's
     },
     advancedAmountLabelText: {
         fontfamily: 'Rubik',
@@ -979,15 +907,11 @@ const styles = StyleSheet.create({
     },
     advancedAmountTextInput: {
         paddingLeft: 15,
-
     },
     dateContainer: {
-        // backgroundColor: 'green',
         marginHorizontal: 20,
-
     },
     dateLabelContainer: {
-
     },
     dateLabelText: {
         fontfamily: 'Rubik',
@@ -1027,7 +951,6 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         marginHorizontal: 20,
         borderRadius: 5,
-
     },
     addText: {
         fontfamily: 'Rubik',
@@ -1038,14 +961,12 @@ const styles = StyleSheet.create({
         color: '#121212',
     },
     idProofFileUploadContainer: {
-        // backgroundColor:'green',
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
         marginVertical: 5,
     },
     uploadImageContainer: {
-        // backgroundColor:'red',
         width: 150,
         height: 70,
         borderWidth: 1,
@@ -1056,8 +977,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
     },
     uploadImage: {
-        // width: 60,
-        // height: 60, 
         resizeMode: 'stretch',
         position: 'absolute',
         width: '95%',
@@ -1066,42 +985,29 @@ const styles = StyleSheet.create({
 
     flatlistViewContainer: {
         flex: 1,
-        // backgroundColor: 'red',
         flexDirection: 'column',
     },
     flatlistContainer: {
-        // backgroundColor: 'green',
-
     },
-
     tableContainer: {
-        // backgroundColor: 'green',
-        // marginHorizontal:20,
         justifyContent: 'space-between',
         alignItems: 'center',
     },
     tableHeader: {
         backgroundColor: '#DCDCDC',
-
     },
     tableTitle: {
-        // marginHorizontal: 20,
-        // marginRight: 10,
-        // backgroundColor:'green',
         flexGrow: 1,
         fontWeight: '700',
-        // fontSize:29
     },
     tableDataCell: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        // backgroundColor: 'red',
         marginVertical: 10,
     },
     tableCellTitle: {
     },
     list: {
-
     },
     getImage: {
         resizeMode: 'stretch',
