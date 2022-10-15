@@ -218,11 +218,11 @@ const HomeScreen = () => {
 
     //ROOM
     const [roomNoData, setRoomNoData] = React.useState([]);
-    console.log('ROOM NO DATA SINGLE TIME RENDER', roomNoData)
-    // const roomDataRetrieve = [];
-    // roomDataRetrieve.push(roomNoData);
-    // console.log('roomDataRetrieve', roomDataRetrieve);
-    // console.log('roomDataRetrieve Object.values', Object.values(roomDataRetrieve));
+    console.log('ROOM NO DATA SINGLE TIME RENDER', roomNoData);
+    const roomDataRetrieve = [];
+    roomDataRetrieve.push(roomNoData);
+    console.log('roomDataRetrieve', roomDataRetrieve);
+    console.log('roomDataRetrieve Object.values', Object.values(roomDataRetrieve));
 
     // let element = '';
     // // for (let index = 0; index < roomDataRetrieve.length; index++) {
@@ -233,16 +233,16 @@ const HomeScreen = () => {
     // }
     // console.log('element', element);
 
-    // React.useEffect(() => {
-    //     //ROOM NO  
-    //     const roomNo = getData1.map((item, index) => {
-    //         console.log('useEffect roomNo item Object.values', item);
-    //         let dataPass = item.Room_no === null ? 101: item.Room_no;
-    //         setRoomNoData(item.Room_no);
-    //     });
-    //     console.log('Room No', roomNo);
-    //     // return;
-    // }, [getData1]);
+    React.useEffect(() => {
+        //ROOM NO  
+        const roomNo = getData1.map((item, index) => {
+            console.log('useEffect roomNo item Object.values', item);
+            let dataPass = item === null ? 111: JSON.parse(item.Room_no);
+            setRoomNoData(dataPass);
+        });
+        console.log('Room No', roomNo);
+        // return;
+    }, [getData1]);
 
     //ADD PERSON...
     React.useEffect(() => {
@@ -386,14 +386,14 @@ const HomeScreen = () => {
                             >
                                 <Picker.Item style={{ color: '#A9A9A9', fontSize: 15 }} label="Select room no" value="Select room no" />
                                 <Picker.Item style={{ color: 'black' }} label="101" value="101" />
-                                {/* <Picker.Item label={element} value={element} /> */}
-                                <Picker.Item label="102" value="102" />
+                                <Picker.Item label={JSON.stringify(roomNoData)} value={JSON.stringify(roomNoData)} />
+                                {/* <Picker.Item label="102" value="102" />
                                 <Picker.Item label="103" value="103" />
                                 <Picker.Item label="104" value="104" />
                                 <Picker.Item label="105" value="105" />
                                 <Picker.Item label="106" value="106" />
                                 <Picker.Item label="107" value="107" />
-                                <Picker.Item label="108" value="108" />
+                                <Picker.Item label="108" value="108" /> */}
                             </Picker>
                             {/* <TextInput
                                 placeholder='Room No'
