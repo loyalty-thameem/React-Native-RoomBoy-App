@@ -1,4 +1,4 @@
-import { Alert, Button, FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, BackHandler, Button, FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import DocumentPicker, { types } from 'react-native-document-picker';
 import DatePicker from 'react-native-date-picker'
@@ -145,7 +145,8 @@ const HomeScreen = () => {
             Alert.alert('Please enter no of person')
         }
         else if (roomNo1 && noOfPerson) {
-            Alert.alert("Hi, Sorry. It's development progress...");
+            // Alert.alert("Hi, Sorry. It's development progress...");
+            Alert.alert("Added room no");
             storeRoomUser();
             getRoom();
             setNoOfPerson('');
@@ -237,7 +238,7 @@ const HomeScreen = () => {
         //ROOM NO  
         const roomNo = getData1.map((item, index) => {
             console.log('useEffect roomNo item Object.values', item);
-            let dataPass = item === null ? 111: JSON.parse(item.Room_no);
+            let dataPass = item === null ? 101: JSON.parse(item.Room_no);
             setRoomNoData(dataPass);
         });
         console.log('Room No', roomNo);
@@ -254,6 +255,22 @@ const HomeScreen = () => {
     }, [getData]);
 //TOP HEADER ACTIVE BUTTON COLOR
     // addPerson && opacity:0.8,backgroundColor:'grey'
+    
+    //BACK ACTION IN HOME SCREEN...
+    React.useEffect(() => {
+        const backAction = () => {
+            BackHandler.exitApp()
+            return true;
+        };
+
+        const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            backAction
+        );
+        //called getItems
+        // getUser();
+        return () => backHandler.remove();
+    }, []);
     //FLATLIST DATE
     const renderItem = ({ item }) => {
         console.log('item flatlist', item)
@@ -385,8 +402,8 @@ const HomeScreen = () => {
                                 onFocus={() => setFocus({ style2: !false })}
                             >
                                 <Picker.Item style={{ color: '#A9A9A9', fontSize: 15 }} label="Select room no" value="Select room no" />
-                                <Picker.Item style={{ color: 'black' }} label="101" value="101" />
-                                <Picker.Item label={JSON.stringify(roomNoData)} value={JSON.stringify(roomNoData)} />
+                                {/* <Picker.Item style={{ color: 'black' }} label="101" value="101" /> */}
+                                <Picker.Item style={{ color: 'black' }} label={JSON.stringify(roomNoData)} value={JSON.stringify(roomNoData)} />
                                 {/* <Picker.Item label="102" value="102" />
                                 <Picker.Item label="103" value="103" />
                                 <Picker.Item label="104" value="104" />
