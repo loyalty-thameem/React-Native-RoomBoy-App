@@ -54,7 +54,7 @@ const HomeScreen = () => {
     //File upload image
     const [fetchImage, setFetchImage] = React.useState('')
     console.log('fetchImage', fetchImage)
-    const icon = fetchImage === '' ? require('../../assets/images/no_image.jpg') : { uri: fetchImage }
+    const icon = fetchImage === '' ? require('../../assets/images/no_image.png') : { uri: fetchImage }
 
     //ADD PERSON STATE
     const [name, setName] = React.useState('');
@@ -118,8 +118,8 @@ const HomeScreen = () => {
         'Contact': contact,
         'Address': address,
         'Image': fetchImage,
-        'Advanced_amount': advancedAmount,
-        'Date': date
+        'Advanced amount': advancedAmount,
+        'Date': date,
     };
     console.log("value",value);
 
@@ -145,7 +145,7 @@ const HomeScreen = () => {
             Alert.alert('Please enter no of person')
         }
         else if (roomNo1 && noOfPerson) {
-            Alert.alert('Thank you');
+            Alert.alert("Hi, Sorry. It's development progress...");
             storeRoomUser();
             getRoom();
             setNoOfPerson('');
@@ -191,7 +191,7 @@ const HomeScreen = () => {
 
     //LOCALSTORAGE FOR VIEW DETAILS IN GET DATA...
     const [getData, setGetData] = React.useState([]);
-    // console.log('getData', getData);
+    console.log('getData', getData);
     const getUser = async () => {
         try {
             const savedUser = await AsyncStorage.getItem('user');
@@ -219,45 +219,50 @@ const HomeScreen = () => {
     //ROOM
     const [roomNoData, setRoomNoData] = React.useState([]);
     console.log('ROOM NO DATA SINGLE TIME RENDER', roomNoData)
-    const roomDataRetrieve = [];
-    roomDataRetrieve.push(roomNoData);
-    console.log('roomDataRetrieve', roomDataRetrieve);
-    console.log('roomDataRetrieve Object.values', Object.values(roomDataRetrieve));
+    // const roomDataRetrieve = [];
+    // roomDataRetrieve.push(roomNoData);
+    // console.log('roomDataRetrieve', roomDataRetrieve);
+    // console.log('roomDataRetrieve Object.values', Object.values(roomDataRetrieve));
 
-    let element = '';
-    for (let index = 0; index < roomDataRetrieve.length; index++) {
-        element += roomDataRetrieve[index].Room_no;
-    }
-    console.log('element', element);
+    // let element = '';
+    // // for (let index = 0; index < roomDataRetrieve.length; index++) {
+    // //     element += roomDataRetrieve[index].Room_no;
+    // // }
+    // for (let index = 0; index < getData1.length; index++) {
+    //     element += getData1[index].Room_no;
+    // }
+    // console.log('element', element);
 
-    React.useEffect(() => {
-        //ROOM NO  
-        const roomNo = getData1.map((item, index) => {
-            console.log('useEffect roomNo item Object.values', item);
-            setRoomNoData(item);
-        });
-        console.log('Room No', roomNo);
-        // return;
-    }, [getData1]);
+    // React.useEffect(() => {
+    //     //ROOM NO  
+    //     const roomNo = getData1.map((item, index) => {
+    //         console.log('useEffect roomNo item Object.values', item);
+    //         let dataPass = item.Room_no === null ? 101: item.Room_no;
+    //         setRoomNoData(item.Room_no);
+    //     });
+    //     console.log('Room No', roomNo);
+    //     // return;
+    // }, [getData1]);
 
     //ADD PERSON...
     React.useEffect(() => {
         const user = getData.map((item, index) => {
-            console.log("item ADD PERSON", Object.keys(item));
+            console.log("item ADD PERSON",item);
             setUserData(item)
         });
         console.log('User retrieve', user);
     }, [getData]);
-
+//TOP HEADER ACTIVE BUTTON COLOR
+    // addPerson && opacity:0.8,backgroundColor:'grey'
     //FLATLIST DATE
     const renderItem = ({ item }) => {
         console.log('item flatlist', item)
-        // console.log('item Object.keys(item)[0] flatlist', JSON.stringify(customeDate.getDate()));
-
+        // console.log('item Object.keys(item)[0] flatlist', Object.values(item)[0]);
+       
         return (
             <>
                 {
-                    item.length !== 0 ?
+                    item !== null&&
                         <DataTable style={styles.tableContainer} key={Object.keys(item).toString()}>
                             <DataTable.Header style={styles.tableHeader}>
                                 <DataTable.Title style={styles.tableTitle}>{"Person"}</DataTable.Title>
@@ -294,10 +299,10 @@ const HomeScreen = () => {
                                 <DataTable.Cell style={styles.tableCellTitle}>{Object.values(item)[6]}</DataTable.Cell>
                             </DataTable.Row>
                         </DataTable>
-                        :
-                        <View>
-                            <Text>{"DATA IS EMPTY"}</Text>
-                        </View>
+                        // :
+                        // <View>
+                        //     <Text>{"DATA IS EMPTY"}</Text>
+                        // </View>
                 }
 
             </>
@@ -305,11 +310,10 @@ const HomeScreen = () => {
         )
 
     }
-
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
-                <TouchableOpacity style={styles.addPersonButton}
+                <TouchableOpacity style={[styles.addPersonButton,addPeson && {backgroundColor:'gray'}]}
                     onPress={() => {
                         Alert.alert('Add Person');
                         setAddPerson(true)
@@ -320,7 +324,7 @@ const HomeScreen = () => {
                 >
                     <Text style={styles.addPersonText}>{"Add Person"}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.addRoomButton}
+                <TouchableOpacity style={[styles.addRoomButton,addRoom && {backgroundColor:'gray'}]}
                     onPress={() => {
                         Alert.alert('Add Room')
                         setAddPerson(false)
@@ -330,7 +334,7 @@ const HomeScreen = () => {
                 >
                     <Text style={styles.addRoomText}>{"Add Room"}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.viewDetailsbutton}
+                <TouchableOpacity style={[styles.viewDetailsbutton,viewDetails && {backgroundColor:'gray'}]}
                     onPress={() => {
                         Alert.alert('Add Details');
                         setAddRoom(false)
@@ -382,13 +386,14 @@ const HomeScreen = () => {
                             >
                                 <Picker.Item style={{ color: '#A9A9A9', fontSize: 15 }} label="Select room no" value="Select room no" />
                                 <Picker.Item style={{ color: 'black' }} label="101" value="101" />
-                                <Picker.Item label={element} value={element} />
-                                {/* <Picker.Item label="103" value="103" />
+                                {/* <Picker.Item label={element} value={element} /> */}
+                                <Picker.Item label="102" value="102" />
+                                <Picker.Item label="103" value="103" />
                                 <Picker.Item label="104" value="104" />
                                 <Picker.Item label="105" value="105" />
                                 <Picker.Item label="106" value="106" />
                                 <Picker.Item label="107" value="107" />
-                                <Picker.Item label="108" value="108" /> */}
+                                <Picker.Item label="108" value="108" />
                             </Picker>
                             {/* <TextInput
                                 placeholder='Room No'
@@ -467,7 +472,12 @@ const HomeScreen = () => {
                                 />
                             </View>
                             <TouchableOpacity style={styles.chooseFileContainer}
-                                onPress={handleDocumentSelection}
+                                onPress={
+                                    ()=>{
+                                        handleDocumentSelection();
+                                        setFocus({ style4: false })
+                                    }
+                                }
                             >
                                 <Text style={styles.chooseFileLabelText}>Choose File</Text>
                                 <Image
@@ -516,7 +526,11 @@ const HomeScreen = () => {
                             <Text style={styles.dateLabelText}>{"Date"}</Text>
                         </View>
                         <TouchableOpacity style={styles.dateshowTextInputContainer}
-                            onPress={() => setOpen(true)}
+                            onPress={() => {
+                                setOpen(true);
+                                setFocus({ style5: false })
+                            }
+                        }
                         >
                             <Text style={styles.textLabelText}>{JSON.stringify((date.getDate()) + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()).slice(1, -1)}</Text>
                             <Image
@@ -594,9 +608,9 @@ const HomeScreen = () => {
                 <View style={styles.flatlistViewContainer}
                 >
                     <FlatList
-                        data={dataRetrieve}
+                        data={getData}
                         renderItem={renderItem}
-                        keyExtractor={(item) => Object.keys(item)}
+                        keyExtractor={(item, index) => String(index)}
                         contentContainerStyle={styles.list}
                         style={styles.flatlistContainer}
                     />
