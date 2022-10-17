@@ -275,7 +275,9 @@ const HomeScreen = () => {
     const renderItem = ({ item }) => {
         console.log('item flatlist', item)
         // console.log('item Object.keys(item)[0] flatlist', Object.values(item)[0]);
-       
+    //    let datalist = [];
+    //    datalist.push(Object.values(item)[6]);
+    //    console.log('datalist',new Date(datalist).getDate()+'/'+new Date(datalist).getMonth()+'/'+new Date(datalist).getFullYear());
         return (
             <>
                 {
@@ -314,6 +316,7 @@ const HomeScreen = () => {
                             <DataTable.Row style={styles.tableDataCell}>
                                 <DataTable.Cell style={styles.tableCellTitle}>{Object.keys(item)[6]}</DataTable.Cell>
                                 <DataTable.Cell style={styles.tableCellTitle}>{Object.values(item)[6]}</DataTable.Cell>
+                                {/* <DataTable.Cell style={styles.tableCellTitle}>{new Date(datalist).getDate()+'/'+new Date(datalist).getMonth()+'/'+new Date(datalist).getFullYear()}</DataTable.Cell> */}
                             </DataTable.Row>
                         </DataTable>
                         // :
@@ -332,7 +335,7 @@ const HomeScreen = () => {
             <View style={styles.headerContainer}>
                 <TouchableOpacity style={[styles.addPersonButton,addPeson && {backgroundColor:'gray'}]}
                     onPress={() => {
-                        Alert.alert('Add Person');
+                        // Alert.alert('Add Person');
                         setAddPerson(true)
                         setViewDetails(false)
                         setAddRoom(false)
@@ -343,7 +346,7 @@ const HomeScreen = () => {
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.addRoomButton,addRoom && {backgroundColor:'gray'}]}
                     onPress={() => {
-                        Alert.alert('Add Room')
+                        // Alert.alert('Add Room');
                         setAddPerson(false)
                         setAddRoom(true)
                         setViewDetails(false)
@@ -353,7 +356,7 @@ const HomeScreen = () => {
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.viewDetailsbutton,viewDetails && {backgroundColor:'gray'}]}
                     onPress={() => {
-                        Alert.alert('Add Details');
+                        // Alert.alert('Add Details');
                         setAddRoom(false)
                         setViewDetails(true)
                         setAddPerson(false)
@@ -586,6 +589,7 @@ const HomeScreen = () => {
                                 }}
                                 onFocus={() => setFocus({ style6: !false })}
                                 style={styles.nameTextInput}
+                                keyboardType ={'number-pad'}
                             />
                         </View>
                     </View>
@@ -604,6 +608,8 @@ const HomeScreen = () => {
                                 }}
                                 onFocus={() => setFocus({ style7: !false })}
                                 style={styles.nameTextInput}
+                                keyboardType ={'number-pad'}
+
                             />
                         </View>
                     </View>
