@@ -131,7 +131,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                     <View style={styles.adminContainer}>
                         <BouncyCheckbox
                             size={25}
-                            fillColor="#DE3905"
+                            fillColor="#0396FF"
                             unfillColor="white"
                             iconStyle={{ borderColor: 'red', color: 'black' }}
                             innerIconStyle={{ borderWidth: 2, color: 'black' }}
@@ -151,7 +151,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                     <View style={styles.userLabelContainer}>
                         <BouncyCheckbox
                             size={25}
-                            fillColor="#DE3905"
+                            fillColor="#0396FF"
                             unfillColor="white"
                             iconStyle={{ borderColor: 'red', color: 'black' }}
                             innerIconStyle={{ borderWidth: 2, color: 'black' }}
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     customNavigatorContainer: {
         // backgroundColor: 'red',
         marginVertical: 15,
-        borderBottomColor: 'red',
+        borderBottomColor: '#0396FF',
         borderBottomWidth: 2,
     },
     loginContainer: {
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
         color: '#121212',
     },
     loginButtonContainer: {
-        backgroundColor: 'red',
+        backgroundColor: '#0396FF',
         height: 40,
         justifyContent: 'center',
         alignItems: 'center',

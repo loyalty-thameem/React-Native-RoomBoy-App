@@ -1,10 +1,19 @@
-import { Alert, BackHandler, Button, FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Alert, BackHandler, Button, FlatList, Image, ImageBackground, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import DocumentPicker, { types } from 'react-native-document-picker';
 import DatePicker from 'react-native-date-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DataTable } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
+import { db } from '../Firebase/firebase-config';
+import {
+    ref,
+    onValue,
+    push,
+    update,
+    remove
+} from 'firebase/database';
+import LinearGradient from 'react-native-linear-gradient';
 const HomeScreen = () => {
     //FILE UPLOAD
     const [fileResponse, setFileResponse] = React.useState([]);
@@ -55,7 +64,7 @@ const HomeScreen = () => {
     const [fetchImage, setFetchImage] = React.useState('')
     console.log('fetchImage', fetchImage)
     const icon = fetchImage === '' ? require('../../assets/images/no_image.png') : { uri: fetchImage }
-
+    console.log('fetchImage Icon ', icon)
     //ADD PERSON STATE
     const [name, setName] = React.useState('');
     const [roomNo, setRoomNo] = React.useState('');
@@ -92,10 +101,10 @@ const HomeScreen = () => {
         }
         else if (name && contact && selectedRoomNo && address && advancedAmount && fetchImage) {
             Alert.alert('Thank you');
-            storeUser();
+            // storeUser();
             setAddPerson(false);
             setViewDetails(true);
-            getUser();
+            // getUser();
             //BUTTON AFTER
             setName('');
             setContact('');
@@ -104,6 +113,9 @@ const HomeScreen = () => {
             setSelectedRoomNo();
             setFetchImage('');
             setFocus({ style5: false })
+            //Firebase
+            addNewPerson();
+            setDate(new Date())
         }
         else {
             Alert.alert('Invalid add person details')
@@ -121,7 +133,7 @@ const HomeScreen = () => {
         'Advanced amount': advancedAmount,
         'Date': date,
     };
-    console.log("value",value);
+    console.log("value", value);
 
     const storeUser = async () => {
         try {
@@ -132,7 +144,7 @@ const HomeScreen = () => {
     }
 
     // HEADER CUSTOM NAVIGATION WITH CONDITONAL...
-    const [addPeson, setAddPerson] = React.useState(true)
+    const [addPerson, setAddPerson] = React.useState(true)
     const [addRoom, setAddRoom] = React.useState(false)
     const [viewDetails, setViewDetails] = React.useState(false)
 
@@ -192,7 +204,7 @@ const HomeScreen = () => {
 
     //LOCALSTORAGE FOR VIEW DETAILS IN GET DATA...
     const [getData, setGetData] = React.useState([]);
-    console.log('getData', getData);
+    console.log('getData', JSON.stringify(getData));
     const getUser = async () => {
         try {
             const savedUser = await AsyncStorage.getItem('user');
@@ -238,7 +250,7 @@ const HomeScreen = () => {
         //ROOM NO  
         const roomNo = getData1.map((item, index) => {
             console.log('useEffect roomNo item Object.values', item);
-            let dataPass = item === null ? 101: JSON.parse(item.Room_no);
+            let dataPass = item === null ? 101 : JSON.parse(item.Room_no);
             setRoomNoData(dataPass);
         });
         console.log('Room No', roomNo);
@@ -246,16 +258,16 @@ const HomeScreen = () => {
     }, [getData1]);
 
     //ADD PERSON...
-    React.useEffect(() => {
-        const user = getData.map((item, index) => {
-            console.log("item ADD PERSON",item);
-            setUserData(item)
-        });
-        console.log('User retrieve', user);
-    }, [getData]);
-//TOP HEADER ACTIVE BUTTON COLOR
+    // React.useEffect(() => {
+    //     const user = getData.map((item, index) => {
+    //         console.log("item ADD PERSON",item);
+    //         setUserData(item)
+    //     });
+    //     console.log('User retrieve', user);
+    // }, [getData]);
+    //TOP HEADER ACTIVE BUTTON COLOR
     // addPerson && opacity:0.8,backgroundColor:'grey'
-    
+
     //BACK ACTION IN HOME SCREEN...
     React.useEffect(() => {
         const backAction = () => {
@@ -275,54 +287,54 @@ const HomeScreen = () => {
     const renderItem = ({ item }) => {
         console.log('item flatlist', item)
         // console.log('item Object.keys(item)[0] flatlist', Object.values(item)[0]);
-    //    let datalist = [];
-    //    datalist.push(Object.values(item)[6]);
-    //    console.log('datalist',new Date(datalist).getDate()+'/'+new Date(datalist).getMonth()+'/'+new Date(datalist).getFullYear());
+        //    let datalist = [];
+        //    datalist.push(Object.values(item)[6]);
+        //    console.log('datalist',new Date(datalist).getDate()+'/'+new Date(datalist).getMonth()+'/'+new Date(datalist).getFullYear());
         return (
             <>
                 {
-                    item !== null&&
-                        <DataTable style={styles.tableContainer} key={Object.keys(item).toString()}>
-                            <DataTable.Header style={styles.tableHeader}>
-                                <DataTable.Title style={styles.tableTitle}>{"Person"}</DataTable.Title>
-                                <DataTable.Title style={styles.tableTitle}>{'Details'}</DataTable.Title>
-                            </DataTable.Header>
-                            <DataTable.Row style={styles.tableDataCell}>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Object.keys(item)[0]}</DataTable.Cell>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Object.values(item)[0]}</DataTable.Cell>
-                            </DataTable.Row>
-                            <DataTable.Row style={styles.tableDataCell}>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Object.keys(item)[1]}</DataTable.Cell>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Object.values(item)[1]}</DataTable.Cell>
-                            </DataTable.Row>
-                            <DataTable.Row style={styles.tableDataCell}>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Object.keys(item)[2]}</DataTable.Cell>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Object.values(item)[2]}</DataTable.Cell>
-                            </DataTable.Row>
-                            <DataTable.Row style={styles.tableDataCell}>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Object.keys(item)[3]}</DataTable.Cell>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Object.values(item)[3]}</DataTable.Cell>
-                            </DataTable.Row>
-                            <DataTable.Row style={styles.tableDataCell}>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Object.keys(item)[4]}</DataTable.Cell>
-                                <Image source={{ uri: Object.values(item)[4] }}
-                                    style={styles.getImage}
-                                />
-                            </DataTable.Row>
-                            <DataTable.Row style={styles.tableDataCell}>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Object.keys(item)[5]}</DataTable.Cell>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Object.values(item)[5]}</DataTable.Cell>
-                            </DataTable.Row>
-                            <DataTable.Row style={styles.tableDataCell}>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Object.keys(item)[6]}</DataTable.Cell>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Object.values(item)[6]}</DataTable.Cell>
-                                {/* <DataTable.Cell style={styles.tableCellTitle}>{new Date(datalist).getDate()+'/'+new Date(datalist).getMonth()+'/'+new Date(datalist).getFullYear()}</DataTable.Cell> */}
-                            </DataTable.Row>
-                        </DataTable>
-                        // :
-                        // <View>
-                        //     <Text>{"DATA IS EMPTY"}</Text>
-                        // </View>
+                    item !== null &&
+                    <DataTable style={styles.tableContainer} key={Object.keys(item).toString()}>
+                        <DataTable.Header style={styles.tableHeader}>
+                            <DataTable.Title style={styles.tableTitle}>{"Person"}</DataTable.Title>
+                            <DataTable.Title style={styles.tableTitle}>{'Details'}</DataTable.Title>
+                        </DataTable.Header>
+                        <DataTable.Row style={styles.tableDataCell}>
+                            <DataTable.Cell style={styles.tableCellTitle}>{Object.keys(item)[0]}</DataTable.Cell>
+                            <DataTable.Cell style={styles.tableCellTitle}>{Object.values(item)[0]}</DataTable.Cell>
+                        </DataTable.Row>
+                        <DataTable.Row style={styles.tableDataCell}>
+                            <DataTable.Cell style={styles.tableCellTitle}>{Object.keys(item)[1]}</DataTable.Cell>
+                            <DataTable.Cell style={styles.tableCellTitle}>{Object.values(item)[1]}</DataTable.Cell>
+                        </DataTable.Row>
+                        <DataTable.Row style={styles.tableDataCell}>
+                            <DataTable.Cell style={styles.tableCellTitle}>{Object.keys(item)[2]}</DataTable.Cell>
+                            <DataTable.Cell style={styles.tableCellTitle}>{Object.values(item)[2]}</DataTable.Cell>
+                        </DataTable.Row>
+                        <DataTable.Row style={styles.tableDataCell}>
+                            <DataTable.Cell style={styles.tableCellTitle}>{Object.keys(item)[3]}</DataTable.Cell>
+                            <DataTable.Cell style={styles.tableCellTitle}>{Object.values(item)[3]}</DataTable.Cell>
+                        </DataTable.Row>
+                        <DataTable.Row style={styles.tableDataCell}>
+                            <DataTable.Cell style={styles.tableCellTitle}>{Object.keys(item)[4]}</DataTable.Cell>
+                            <Image source={{ uri: Object.values(item)[4] }}
+                                style={styles.getImage}
+                            />
+                        </DataTable.Row>
+                        <DataTable.Row style={styles.tableDataCell}>
+                            <DataTable.Cell style={styles.tableCellTitle}>{Object.keys(item)[5]}</DataTable.Cell>
+                            <DataTable.Cell style={styles.tableCellTitle}>{Object.values(item)[5]}</DataTable.Cell>
+                        </DataTable.Row>
+                        <DataTable.Row style={styles.tableDataCell}>
+                            <DataTable.Cell style={styles.tableCellTitle}>{Object.keys(item)[6]}</DataTable.Cell>
+                            <DataTable.Cell style={styles.tableCellTitle}>{Object.values(item)[6]}</DataTable.Cell>
+                            {/* <DataTable.Cell style={styles.tableCellTitle}>{new Date(datalist).getDate()+'/'+new Date(datalist).getMonth()+'/'+new Date(datalist).getFullYear()}</DataTable.Cell> */}
+                        </DataTable.Row>
+                    </DataTable>
+                    // :
+                    // <View>
+                    //     <Text>{"DATA IS EMPTY"}</Text>
+                    // </View>
                 }
 
             </>
@@ -330,10 +342,133 @@ const HomeScreen = () => {
         )
 
     }
+    // //FIREBASE WORKS...
+    const [loader,setLoader] = React.useState(false);
+    React.useEffect(() => {
+        setLoader(true);
+        return onValue(ref(db, '/addperson'), querySnapShot => {
+            let data = querySnapShot.val() || {};
+            let todoItems = { ...data };
+            console.log('Useefffect todoItems', todoItems)
+            setGetData(todoItems);
+            setLoader(false);
+        });
+    }, []);
+
+    function addNewPerson() {
+        push(ref(db, '/addperson'), {
+            //   addperson: value,
+            //    value,
+            'Name': name,
+            'Room_no': selectedRoomNo,
+            'Contact': contact,
+            'Address': address,
+            'Image': fetchImage,
+            'Advanced_amount': advancedAmount,
+            'date': date.getTime(),
+        });
+        // setPresentTodo('');
+    }
+    const addPersonKey = Object.keys(getData);
+    console.log('addPersonKey is =======>', addPersonKey);
+    //
+    // {todosKeys.length > 0 ? (
+    //     todosKeys.map(key => (
+    //       <ToDoItem
+    //         key={key}
+    //         id={key}
+    //         todoItem={todos[key]}
+    //       />
+    //     ))
+    //   ) : (
+    //     <Text>No todo item</Text>
+    //   )}
+
+    const AddItems = ({ addItems: { Name, Room_no, Contact, Address, Image, Advanced_amount, date } }) => {
+        console.log('AddItems addperson Name', Name)
+        console.log('AddItems addperson Room_no', Room_no)
+        console.log('AddItems addperson Contact', Contact)
+        console.log('AddItems addperson Address', Address)
+        console.log('AddItems addperson Image', Image)
+        console.log('AddItems addperson Advanced_amount', Advanced_amount)
+        console.log('AddItems addperson Date', date)
+        // const image = JSON.stringify(Image)
+        // console.log('AddItems addperson JSON image',image)
+        // let getDat = [];
+        // const image = Image
+        // getDat.push(image)
+        let hello = date;
+        console.log('hello', hello);
+        let dates = new Date(hello);
+        console.log('AddItems to date', dates.getDate().toString() + '/' + (dates.getMonth().toString() + 1) + '/' + dates.getFullYear().toString())
+
+        return (
+            <View>
+
+                {
+                    Name === null ?
+                        <Text>No data</Text>
+                        :
+                        // <DataTable style={styles.tableContainer} key={Object.keys(item).toString()}>
+                        <DataTable style={styles.tableContainer}>
+
+                            <DataTable.Header style={styles.tableHeader}>
+                                <DataTable.Title style={styles.tableTitle}>{"Person"}</DataTable.Title>
+                                <DataTable.Title style={styles.tableTitle}>{'Details'}</DataTable.Title>
+                            </DataTable.Header>
+                            <DataTable.Row style={styles.tableDataCell}>
+                                <DataTable.Cell style={styles.tableCellTitle}>{'Name'}</DataTable.Cell>
+                                <DataTable.Cell style={styles.tableCellTitle}>{Name}</DataTable.Cell>
+                            </DataTable.Row>
+                            <DataTable.Row style={styles.tableDataCell}>
+                                <DataTable.Cell style={styles.tableCellTitle}>{'Room no'}</DataTable.Cell>
+                                <DataTable.Cell style={styles.tableCellTitle}>{Room_no}</DataTable.Cell>
+                            </DataTable.Row>
+                            <DataTable.Row style={styles.tableDataCell}>
+                                <DataTable.Cell style={styles.tableCellTitle}>{'Contact'}</DataTable.Cell>
+                                <DataTable.Cell style={styles.tableCellTitle}>{Contact}</DataTable.Cell>
+                            </DataTable.Row>
+                            <DataTable.Row style={styles.tableDataCell}>
+                                <DataTable.Cell style={styles.tableCellTitle}>{'Address'}</DataTable.Cell>
+                                <DataTable.Cell style={styles.tableCellTitle}>{Address}</DataTable.Cell>
+                            </DataTable.Row>
+                            {/* <DataTable.Row style={styles.tableDataCell}>
+                    <DataTable.Cell style={styles.tableCellTitle}>{Image}</DataTable.Cell>
+                    <DataTable.Cell style={styles.tableCellTitle}>{Image}</DataTable.Cell>
+                </DataTable.Row> */}
+                            <DataTable.Row style={styles.tableDataCell}>
+                                <DataTable.Cell style={styles.tableCellTitle}>{"Image"}</DataTable.Cell>
+                                <ImageBackground
+                                    source={{ uri: Image }}
+                                    resizeMode="stretch"
+                                    style={styles.getImage}
+                                />
+                            </DataTable.Row>
+                            <DataTable.Row style={styles.tableDataCell}>
+                                <DataTable.Cell style={styles.tableCellTitle}>{'Advanced amount'}</DataTable.Cell>
+                                <DataTable.Cell style={styles.tableCellTitle}>{Advanced_amount}</DataTable.Cell>
+                            </DataTable.Row>
+                            <DataTable.Row style={styles.tableDataCell}>
+                                <DataTable.Cell style={styles.tableCellTitle}>{'Date'}</DataTable.Cell>
+                                <DataTable.Cell style={styles.tableCellTitle}>{dates.getDate().toString() + '/' + (dates.getMonth() + 1).toString() + '/' + dates.getFullYear().toString()}</DataTable.Cell>
+                            </DataTable.Row>
+
+
+                        </DataTable>
+                    // :
+                    // <View>
+                    //     <Text>{"DATA IS EMPTY"}</Text>
+                    // </View>
+                }
+
+            </View>
+        )
+    }
     return (
         <View style={styles.container}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity style={[styles.addPersonButton,addPeson && {backgroundColor:'gray'}]}
+            {/* <View style={[styles.headerContainer, viewDetails && { marginVertical: 35 }]}> */}
+            <View style={[styles.headerContainer, viewDetails && addPersonKey.length > 0 ? { marginVertical: 35 } : null]}>
+                <TouchableOpacity style={[styles.addPersonButton, addPerson && { backgroundColor: '#28C76F' }]}
                     onPress={() => {
                         // Alert.alert('Add Person');
                         setAddPerson(true)
@@ -342,9 +477,9 @@ const HomeScreen = () => {
                         // getRoom();
                     }}
                 >
-                    <Text style={styles.addPersonText}>{"Add Person"}</Text>
+                    <Text style={[styles.addPersonText, addPerson && { color: 'black' }]}>{"Add Person"}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.addRoomButton,addRoom && {backgroundColor:'gray'}]}
+                <TouchableOpacity style={[styles.addRoomButton, addRoom && { backgroundColor: '#28C76F' }]}
                     onPress={() => {
                         // Alert.alert('Add Room');
                         setAddPerson(false)
@@ -352,9 +487,9 @@ const HomeScreen = () => {
                         setViewDetails(false)
                     }}
                 >
-                    <Text style={styles.addRoomText}>{"Add Room"}</Text>
+                    <Text style={[styles.addRoomText, addRoom && { color: 'black' }]}>{"Add Room"}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.viewDetailsbutton,viewDetails && {backgroundColor:'gray'}]}
+                <TouchableOpacity style={[styles.viewDetailsbutton, viewDetails && { backgroundColor: '#28C76F' }]}
                     onPress={() => {
                         // Alert.alert('Add Details');
                         setAddRoom(false)
@@ -362,13 +497,13 @@ const HomeScreen = () => {
                         setAddPerson(false)
                     }}
                 >
-                    <Text style={styles.viewDetailsText}>{"View Details"}</Text>
+                    <Text style={[styles.viewDetailsText, viewDetails && { color: 'black' }]}>{"View Details"}</Text>
                 </TouchableOpacity>
             </View>
 
             {/* //CONDTIONAL TO RETIEVE DATA FROM (ADD PERSON)... */}
             {
-                addPeson &&
+                addPerson &&
                 <View style={styles.mainContainer}>
                     <View style={styles.nameContainer}>
                         <View style={styles.nameLabelTextContainer}>
@@ -493,7 +628,7 @@ const HomeScreen = () => {
                             </View>
                             <TouchableOpacity style={styles.chooseFileContainer}
                                 onPress={
-                                    ()=>{
+                                    () => {
                                         handleDocumentSelection();
                                         setFocus({ style4: false })
                                     }
@@ -550,7 +685,7 @@ const HomeScreen = () => {
                                 setOpen(true);
                                 setFocus({ style5: false })
                             }
-                        }
+                            }
                         >
                             <Text style={styles.textLabelText}>{JSON.stringify((date.getDate()) + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()).slice(1, -1)}</Text>
                             <Image
@@ -559,7 +694,8 @@ const HomeScreen = () => {
                             />
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.addButton}
+                    <TouchableOpacity
+                     style={styles.addButton}
                         onPress={
                             () => {
                                 addPersonValidation()
@@ -589,7 +725,7 @@ const HomeScreen = () => {
                                 }}
                                 onFocus={() => setFocus({ style6: !false })}
                                 style={styles.nameTextInput}
-                                keyboardType ={'number-pad'}
+                                keyboardType={'number-pad'}
                             />
                         </View>
                     </View>
@@ -608,36 +744,74 @@ const HomeScreen = () => {
                                 }}
                                 onFocus={() => setFocus({ style7: !false })}
                                 style={styles.nameTextInput}
-                                keyboardType ={'number-pad'}
+                                keyboardType={'number-pad'}
 
                             />
                         </View>
                     </View>
-                    <TouchableOpacity style={styles.addButton}
+
+                    <TouchableOpacity 
+                               style={styles.addButton}
                         onPress={
                             () => {
                                 addRoomValidation()
                             }
-                        }
+                        } 
+                        
                     >
+
                         <Text style={styles.addText}>{"Add"}</Text>
+
                     </TouchableOpacity>
+
                 </View>
             }
 
             {/* VIEW DETAILS... */}
-            {
+            {/* {
                 viewDetails &&
                 <View style={styles.flatlistViewContainer}
                 >
                     <FlatList
                         data={getData}
                         renderItem={renderItem}
-                        keyExtractor={(item, index) => String(index)}
+                        keyExtractor={(item, index) => addPersonKey}
                         contentContainerStyle={styles.list}
                         style={styles.flatlistContainer}
                     />
                 </View>
+            } */}
+            {
+                viewDetails &&
+                <ScrollView
+                //                 showsVerticalScrollIndicator={false}
+                //   showsHorizontalScrollIndicator={false}
+
+                >
+                    {
+                        loader ?
+                         <ActivityIndicator
+                            size={"large"}
+                            color="#00C0F0"
+                        />
+                        :
+                    addPersonKey.length >= 1 ? (
+                        addPersonKey.map(key => (
+                            <AddItems
+                                key={key}
+                                id={key}
+                                addItems={getData[key]}
+                            />
+                        ))
+                    ) : (
+                        // <ActivityIndicator
+                        //     size={"large"}
+                        //     color="#00C0F0"
+                        // />
+                        <Text>No Data</Text>
+                    )
+                    }
+                </ScrollView>
             }
         </View>
     )
@@ -657,7 +831,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     addPersonButton: {
-        backgroundColor: '#DE3905',
+        backgroundColor: '#0396FF',
         flex: 0.3,
         height: 25,
         justifyContent: 'center',
@@ -673,7 +847,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     addRoomButton: {
-        backgroundColor: '#DE3905',
+        backgroundColor: '#0396FF',
         flex: 0.3,
         height: 25,
         justifyContent: 'center',
@@ -689,7 +863,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     viewDetailsbutton: {
-        backgroundColor: '#DE3905',
+        backgroundColor: '#0396FF',
         flex: 0.3,
         height: 25,
         justifyContent: 'center',
@@ -898,7 +1072,7 @@ const styles = StyleSheet.create({
         color: '#121212',
     },
     chooseFileContainer: {
-        backgroundColor: "#DE3905",
+        backgroundColor: "#0396FF",
         flexDirection: 'row',
         marginHorizontal: 20,
         width: 150,
@@ -981,7 +1155,7 @@ const styles = StyleSheet.create({
         height: 25,
     },
     addButton: {
-        backgroundColor: '#DE3905',
+        backgroundColor: '#0396FF',
         height: 30,
         justifyContent: 'center',
         alignItems: 'center',
