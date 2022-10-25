@@ -365,7 +365,8 @@ const HomeScreen = () => {
             'Address': address,
             'Image': fetchImage,
             'Advanced_amount': advancedAmount,
-            'date': date.getTime(),
+            // 'date': date.getTime(), 
+            'date': date.toUTCString(),
         });
         // setPresentTodo('');
     }
@@ -467,7 +468,7 @@ const HomeScreen = () => {
     return (
         <View style={styles.container}>
             {/* <View style={[styles.headerContainer, viewDetails && { marginVertical: 35 }]}> */}
-            <View style={[styles.headerContainer, viewDetails && addPersonKey.length > 0 ? { marginVertical: 35 } : null]}>
+            <View style={[styles.headerContainer, viewDetails  && addPersonKey.length > 0 ? { marginVertical: 35 } : null]}>
                 <TouchableOpacity style={[styles.addPersonButton, addPerson && { backgroundColor: '#28C76F' }]}
                     onPress={() => {
                         // Alert.alert('Add Person');
@@ -512,7 +513,7 @@ const HomeScreen = () => {
                         <View style={customStyle1}>
                             <TextInput
                                 placeholder='Name'
-                                placeholderTextColor={''}
+                               placeholderTextColor={'#C4C4C4'}
                                 value={name}
                                 onChangeText={(text) => {
                                     console.log(text);
@@ -552,7 +553,7 @@ const HomeScreen = () => {
                             </Picker>
                             {/* <TextInput
                                 placeholder='Room No'
-                                placeholderTextColor={''}
+                               placeholderTextColor={'#C4C4C4'}
                                 value={roomNo}
                                 onChangeText={(text) => {
                                     console.log(text);
@@ -571,7 +572,7 @@ const HomeScreen = () => {
                         <View style={customStyle3}>
                             <TextInput
                                 placeholder='Contact No'
-                                placeholderTextColor={''}
+                               placeholderTextColor={'#C4C4C4'}
                                 value={contact}
                                 onChangeText={(text) => {
                                     console.log(text);
@@ -590,7 +591,7 @@ const HomeScreen = () => {
                         <View style={customStyle4}>
                             <TextInput
                                 placeholder='Address'
-                                placeholderTextColor={''}
+                               placeholderTextColor={'#C4C4C4'}
                                 value={address}
                                 onChangeText={(text) => {
                                     console.log(text);
@@ -650,7 +651,7 @@ const HomeScreen = () => {
                         <View style={customStyle5}>
                             <TextInput
                                 placeholder='Advanced Amount'
-                                placeholderTextColor={''}
+                               placeholderTextColor={'#C4C4C4'}
                                 value={advancedAmount}
                                 onChangeText={(text) => {
                                     console.log(text);
@@ -717,7 +718,7 @@ const HomeScreen = () => {
                         <View style={customStyle6}>
                             <TextInput
                                 placeholder='Room No'
-                                placeholderTextColor={''}
+                               placeholderTextColor={'#C4C4C4'}
                                 value={roomNo1}
                                 onChangeText={(text) => {
                                     console.log(text);
@@ -736,7 +737,7 @@ const HomeScreen = () => {
                         <View style={customStyle7}>
                             <TextInput
                                 placeholder='No of Person'
-                                placeholderTextColor={''}
+                               placeholderTextColor={'#C4C4C4'}
                                 value={noOfPerson}
                                 onChangeText={(text) => {
                                     console.log(text);
@@ -911,7 +912,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         height: 40,
         borderWidth: 1,
-        borderColor: 'red',
+        borderColor: '#0396FF',
     },
     nameTextInput: {
         paddingLeft: 15,

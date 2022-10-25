@@ -181,6 +181,26 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                         <Text style={styles.singupText}>{"Signup"}</Text>
                     </TouchableOpacity>
                 </View>
+                <View style={styles.socialLoginContainer}>
+                    <TouchableOpacity style={styles.facebookImageContainer}>
+                        <Image
+                            style={styles.facebookImage}
+                            source={require('../../assets/images/facebook_logo.jpg')}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.googleImageContainer}>
+                        <Image
+                            style={styles.googleImage}
+                            source={require('../../assets/images/google_logo.png')}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.twitterImageContainer}>
+                        <Image
+                            style={styles.twitterImage}
+                            source={require('../../assets/images/twitter_logo.png')}
+                        />
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
     )
@@ -262,7 +282,7 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         borderRadius: 5,
         borderWidth: 1.5,
-        borderColor: 'red',
+        borderColor: '#0396FF',
     },
     usernameTextInput: {
         paddingLeft: 15,
@@ -300,7 +320,7 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         borderRadius: 5,
         borderWidth: 1.2,
-        borderColor: 'red',
+        borderColor: '#0396FF',
     },
     passwordTextInput: {
         paddingLeft: 15,
@@ -326,7 +346,7 @@ const styles = StyleSheet.create({
         width: 30,
     },
     rememberLabelContainer: {
-    
+
     },
     rememberLabelText: {
         fontFamily: 'Rubik',
@@ -421,5 +441,65 @@ const styles = StyleSheet.create({
         lineHeight: 17,
         color: '#121212',
         marginVertical: 10
+    },
+    socialLoginContainer: {
+        // backgroundColor: 'red',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginVertical:10,
+    },
+    facebookImageContainer: {
+        marginHorizontal: 10,
+        backgroundColor: 'white',
+        width: 40,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        elevation: 5
+    },
+    facebookImage: {
+        width: 25,
+        height: 25
+    },
+    googleImageContainer: {
+        marginHorizontal: 10,
+        backgroundColor: 'white',
+        width: 40,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        elevation: 5
+    },
+    googleImage: {
+        width: 30,
+        height: 30
+    },
+    twitterImageContainer: {
+        marginHorizontal: 10,
+        backgroundColor: 'white',
+        width: 40,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        elevation: 5
+    },
+    twitterImage: {
+        width: 30,
+        height: 30
     }
 })
