@@ -38,6 +38,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     }
     // HEADER IMAGES...
     const icon = checked === false ? require('../../assets/images/admin_background.png') : require('../../assets/images/user_background.png')
+    
     return (
         <View style={styles.container}>
             <View style={styles.backgroundImageContainer}>
@@ -460,11 +461,12 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.8,
         shadowRadius: 2,
-        elevation: 5
+        elevation: 5,
     },
     facebookImage: {
         width: 25,
-        height: 25
+        height: 25,
+        borderRadius:20,
     },
     googleImageContainer: {
         marginHorizontal: 10,
@@ -482,7 +484,9 @@ const styles = StyleSheet.create({
     },
     googleImage: {
         width: 30,
-        height: 30
+        height: 30,
+        borderRadius:20,
+
     },
     twitterImageContainer: {
         marginHorizontal: 10,
@@ -500,6 +504,8 @@ const styles = StyleSheet.create({
     },
     twitterImage: {
         width: 30,
-        height: 30
+        height: 30,
+        borderRadius:20,
+
     }
 })
