@@ -11,9 +11,11 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     const [focus, setFocus] = React.useState({
         style1: false,
         style2: false,
+        style3: false,
     });
     const customStyle1 = !focus.style1 ? styles.usernameTextInputContainer : styles.usernameTextInputContainerFocus;
     const customStyle2 = !focus.style2 ? styles.textinputTextContainer : styles.textinputTextContainerFocus;
+    const customStyle3 = !focus.style3 ? styles.textinputTextContainer1 : styles.textinputTextContainerFocus1;
     //LOGIN VALIDATION
     const loginValidation = () => {
         if (username.length === 0) {
@@ -31,6 +33,12 @@ const LoginScreen = ({ navigation: { navigate } }) => {
         else if (checked === false && username && password) {
             navigate('Home');
             Alert.alert('Thank you')
+            setChecked(false);
+            setRememberChecked(false);
+            setUsername('');
+            setPassword('');
+            setFocus({  style2: false})
+
         }
         else {
             Alert.alert('Your login details invalid');
@@ -38,7 +46,41 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     }
     // HEADER IMAGES...
     const icon = checked === false ? require('../../assets/images/admin_background.png') : require('../../assets/images/user_background.png')
-    
+    //SIGN PAGE 
+    const [ifSignIn, setIfSignIn] = React.useState(false);
+    const [confirmPassword, setConfirmPassword] = React.useState('');
+
+    // SIGN VALIDATION 
+    const signUpValidation = () => {
+        if (username.length === 0) {
+            Alert.alert('Please Enter your username');
+        }
+        else if (password.length === 0) {
+            Alert.alert('Please Enter your password')
+        }
+        else if (confirmPassword.length === 0) {
+            Alert.alert('Please Enter your confirm password')
+        }
+        else if (password !== confirmPassword) {
+            Alert.alert('Please Enter passoword properly')
+        }
+        else if (checked === true) {
+            Alert.alert('Temporarily user not allowed')
+        }
+        else if (checked === false && username && password && confirmPassword) {
+            navigate('Home');
+            Alert.alert('Thank you')
+            setChecked(false);
+            setUsername('');
+            setPassword('');
+            setConfirmPassword('')
+            setIfSignIn(false);
+            setFocus({style3:false})
+        }
+        else {
+            setIfSignIn(false);
+        }
+    }
     return (
         <View style={styles.container}>
             <View style={styles.backgroundImageContainer}>
@@ -50,7 +92,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             <View style={styles.curveMainContainer}>
                 <View style={styles.customNavigatorContainer}>
                     {/* <View style={styles.loginContainer}> */}
-                    <Text style={styles.loginText}>{"Login"}</Text>
+                    <Text style={styles.loginText}>{ifSignIn ? "Signup" : "Login"}</Text>
                     {/* </View> */}
                     {/* <View style={styles.signupContainer}>
                         <Text style={styles.signupText}>{"Sign up"}</Text>
@@ -96,38 +138,64 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                         />
                     </View>
                 </View>
-                <View style={styles.remembermeAndForgetContainer}>
-                    <View style={styles.rememberContainer}>
-                        <View style={styles.squareCheckBoxContainer}>
-                            <BouncyCheckbox
-                                size={20}
-                                fillColor="#7B61FF"
-                                unfillColor="#FFFFFF"
-                                iconStyle={{ borderColor: 'red', color: 'black' }}
-                                innerIconStyle={{ borderWidth: 2, color: 'black' }}
-                                checkIconImageSource={
-                                    require('../../assets/images/checkicon.png')
-                                }
-                                textStyle={{ fontFamily: 'JosefinSans-Regular' }}
-                                isChecked={rememberChecked}
-                                disableBuiltInState
-                                onPress={(rememberCheck) => {
-                                    // setChecked(!checked)
-                                    // console.log("222", !checked);
-                                    setRememberChecked(!rememberChecked)
-                                    console.log("rememberChecked", !rememberChecked);
-
+                {
+                    ifSignIn &&
+                    <View style={styles.inputFieldContainer3}>
+                        <View style={styles.passwordLabelContainer}>
+                            <Text style={styles.passwordText}>{"Confirm Password"}</Text>
+                        </View>
+                        <View style={customStyle3}>
+                            <TextInput
+                                placeholder='Confirm Password'
+                                placeholderTextColor={'#C4C4C4'}
+                                onChangeText={(passwordTextValue) => {
+                                    console.log(passwordTextValue);
+                                    setConfirmPassword(passwordTextValue);
                                 }}
+                                value={confirmPassword}
+
+                                style={styles.confirmPasswordTextInput}
+                                onFocus={() => setFocus({ style3: !false })}
+                                secureTextEntry={true}
                             />
                         </View>
-                        <View style={styles.rememberLabelContainer}>
-                            <Text style={styles.rememberLabelText}>{"Remember me"}</Text>
-                        </View>
                     </View>
-                    <TouchableOpacity style={styles.forgetPasswordLabelContainer}>
-                        <Text style={styles.forgetPasswordLabelText}>{"Forget password?"}</Text>
-                    </TouchableOpacity>
-                </View>
+                }
+                {
+                    !ifSignIn &&
+                    <View style={styles.remembermeAndForgetContainer}>
+                        <View style={styles.rememberContainer}>
+                            <View style={styles.squareCheckBoxContainer}>
+                                <BouncyCheckbox
+                                    size={20}
+                                    fillColor="#7B61FF"
+                                    unfillColor="#FFFFFF"
+                                    iconStyle={{ borderColor: 'red', color: 'black' }}
+                                    innerIconStyle={{ borderWidth: 2, color: 'black' }}
+                                    checkIconImageSource={
+                                        require('../../assets/images/checkicon.png')
+                                    }
+                                    textStyle={{ fontFamily: 'JosefinSans-Regular' }}
+                                    isChecked={rememberChecked}
+                                    disableBuiltInState
+                                    onPress={(rememberCheck) => {
+                                        // setChecked(!checked)
+                                        // console.log("222", !checked);
+                                        setRememberChecked(!rememberChecked)
+                                        console.log("rememberChecked", !rememberChecked);
+
+                                    }}
+                                />
+                            </View>
+                            <View style={styles.rememberLabelContainer}>
+                                <Text style={styles.rememberLabelText}>{"Remember me"}</Text>
+                            </View>
+                        </View>
+                        <TouchableOpacity style={styles.forgetPasswordLabelContainer}>
+                            <Text style={styles.forgetPasswordLabelText}>{"Forget password?"}</Text>
+                        </TouchableOpacity>
+                    </View>
+                }
                 <View style={styles.adminOrUserContainer}>
                     <View style={styles.adminContainer}>
                         <BouncyCheckbox
@@ -170,38 +238,76 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                         <Text style={styles.userLabelText}>{"User"}</Text>
                     </View>
                 </View>
-                <TouchableOpacity style={styles.loginButtonContainer}
-                    onPress={() => {
-                        loginValidation()
-                    }}>
-                    <Text style={styles.loginLabelText}>{"Login"}</Text>
-                </TouchableOpacity>
+                {!ifSignIn ?
+                    <TouchableOpacity style={styles.loginButtonContainer}
+                        onPress={() => {
+                            loginValidation()
+                        }}>
+                        <Text style={styles.loginLabelText}>{"Login"}</Text>
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity style={styles.loginButtonContainer}
+                        onPress={() => {
+                            signUpValidation()
+                        }}>
+                        <Text style={styles.loginLabelText}>{'Signup'}</Text>
+                    </TouchableOpacity>
+                }
                 <View style={styles.orAndSignupContainer}>
                     <Text style={styles.orText}>{"OR"}</Text>
-                    <TouchableOpacity style={styles.singupContainer}>
-                        <Text style={styles.singupText}>{"Signup"}</Text>
-                    </TouchableOpacity>
+                    {
+                        !ifSignIn
+                            ?
+                            <TouchableOpacity style={styles.singupContainer}
+                                onPress={() => {
+                                    setIfSignIn(true);
+                                    setChecked(false);
+                                    setUsername('');
+                                    setPassword('');
+                                    setFocus({  style2: false})
+
+                                }}>
+                                <Text style={styles.singupText}>{"Signup"}</Text>
+                            </TouchableOpacity>
+                            :
+                            <TouchableOpacity style={styles.singupContainer}
+                                onPress={() => {
+                                    setIfSignIn(false);
+                                    setChecked(false);
+                                    setRememberChecked(false);
+                                    setUsername('');
+                                    setPassword('');
+                                    setConfirmPassword('');
+                                    setFocus({  style2: false})
+                                }}>
+                                <Text style={styles.singupText}>{'Login'}</Text>
+                            </TouchableOpacity>
+                    }
+
                 </View>
-                <View style={styles.socialLoginContainer}>
-                    <TouchableOpacity style={styles.facebookImageContainer}>
-                        <Image
-                            style={styles.facebookImage}
-                            source={require('../../assets/images/facebook_logo.jpg')}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.googleImageContainer}>
-                        <Image
-                            style={styles.googleImage}
-                            source={require('../../assets/images/google_logo.png')}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.twitterImageContainer}>
-                        <Image
-                            style={styles.twitterImage}
-                            source={require('../../assets/images/twitter_logo.png')}
-                        />
-                    </TouchableOpacity>
-                </View>
+                {
+                    !ifSignIn &&
+                    <View style={styles.socialLoginContainer}>
+                        <TouchableOpacity style={styles.facebookImageContainer}>
+                            <Image
+                                style={styles.facebookImage}
+                                source={require('../../assets/images/facebook_logo.jpg')}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.googleImageContainer}>
+                            <Image
+                                style={styles.googleImage}
+                                source={require('../../assets/images/google_logo.png')}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.twitterImageContainer}>
+                            <Image
+                                style={styles.twitterImage}
+                                source={require('../../assets/images/twitter_logo.png')}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                }
             </View>
         </View>
     )
@@ -312,6 +418,14 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         borderRadius: 5,
 
+    },
+    textinputTextContainer1: {
+        backgroundColor: '#F3F3F3',
+        flexGrow: 1,
+        marginHorizontal: 20,
+        marginVertical: 5,
+        borderRadius: 5,
+
 
     },
     textinputTextContainerFocus: {
@@ -323,7 +437,20 @@ const styles = StyleSheet.create({
         borderWidth: 1.2,
         borderColor: '#0396FF',
     },
+    textinputTextContainerFocus1: {
+        backgroundColor: '#F3F3F3',
+        flexGrow: 1,
+        marginHorizontal: 20,
+        marginVertical: 5,
+        borderRadius: 5,
+        borderWidth: 1.2,
+        borderColor: '#0396FF',
+    },
     passwordTextInput: {
+        paddingLeft: 15,
+
+    },
+    confirmPasswordTextInput: {
         paddingLeft: 15,
 
     },
@@ -447,7 +574,7 @@ const styles = StyleSheet.create({
         // backgroundColor: 'red',
         flexDirection: 'row',
         justifyContent: 'center',
-        marginVertical:10,
+        marginVertical: 10,
     },
     facebookImageContainer: {
         marginHorizontal: 10,
@@ -466,7 +593,7 @@ const styles = StyleSheet.create({
     facebookImage: {
         width: 25,
         height: 25,
-        borderRadius:20,
+        borderRadius: 20,
     },
     googleImageContainer: {
         marginHorizontal: 10,
@@ -485,7 +612,7 @@ const styles = StyleSheet.create({
     googleImage: {
         width: 30,
         height: 30,
-        borderRadius:20,
+        borderRadius: 20,
 
     },
     twitterImageContainer: {
@@ -505,7 +632,7 @@ const styles = StyleSheet.create({
     twitterImage: {
         width: 30,
         height: 30,
-        borderRadius:20,
+        borderRadius: 20,
 
     }
 })

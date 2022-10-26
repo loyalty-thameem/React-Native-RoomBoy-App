@@ -19,7 +19,7 @@
     "@react-navigation/native-stack": "^6.9.0",
     "firebase": "^9.12.1",
     "react": "18.1.0",
-    "react-native": "0.70.2",
+    "react-native": "^0.70.4",
     "react-native-bouncy-checkbox": "^3.0.5",
     "react-native-date-picker": "^4.2.5",
     "react-native-document-picker": "^8.1.1",

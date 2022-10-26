@@ -15,7 +15,7 @@ import {
 } from 'firebase/database';
 import LinearGradient from 'react-native-linear-gradient';
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation:{navigate}}) => {
     //FILE UPLOAD
     const [fileResponse, setFileResponse] = React.useState([]);
     // console.log('fileresponse',fileResponse)
@@ -704,6 +704,15 @@ const HomeScreen = () => {
                             }
                         }>
                         <Text style={styles.addText}>{"Add"}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                     style={styles.addButton}
+                        onPress={
+                            () => {
+                                navigate('Login')
+                            }
+                        }>
+                        <Text style={styles.addText}>{"Logout"}</Text>
                     </TouchableOpacity>
                 </View>
             }
