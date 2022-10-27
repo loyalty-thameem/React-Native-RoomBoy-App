@@ -135,6 +135,9 @@ const LoginScreen = ({ navigation: { navigate } }) => {
         else if (checked === true) {
             Alert.alert('Temporarily user not allowed')
         }
+        else if (dataAra.includes(username)) {
+            Alert.alert('Username already exists')
+        }
         else if (checked === false && username && password && confirmPassword) {
             navigate('Home');
             Alert.alert('Thank you')
