@@ -1,6 +1,7 @@
 import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity, Alert } from 'react-native'
 import React from 'react'
 import BouncyCheckbox from "react-native-bouncy-checkbox";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation: { navigate } }) => {
     const [checked, setChecked] = React.useState(false);
@@ -16,6 +17,49 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     const customStyle1 = !focus.style1 ? styles.usernameTextInputContainer : styles.usernameTextInputContainerFocus;
     const customStyle2 = !focus.style2 ? styles.textinputTextContainer : styles.textinputTextContainerFocus;
     const customStyle3 = !focus.style3 ? styles.textinputTextContainer1 : styles.textinputTextContainerFocus1;
+    // GET LOCALSTORAGE FOR VALIDATION PURPOSE
+    const [getUserName, setGetUserName] = React.useState([]);
+    console.log('getusername ', getUserName);
+    let dataAra = [];
+    Object.keys(getUserName).forEach((key) => {
+        if (getUserName[key] === getUserName[key]) {
+            console.log('The Object key getUsername', getUserName[key].username);
+            dataAra.push(getUserName[key].username);
+        }
+    })
+    console.log('dataAra', dataAra);
+    // React.useEffect(()=>{
+    // return;
+    // },[username]);
+    console.log('dataAra.includes(username)', dataAra.includes(username));
+
+    let element = '';
+    for (let index = 0; index < getUserName.length; index++) {
+        element = getUserName[index].username;
+        console.log('element', element);
+
+    }
+    const dataCheck = [];
+    dataCheck.push(element);
+    console.log('Datacheck', dataCheck);
+    console.log('element3', element);
+    const getUserVal = async () => {
+        try {
+            const data = await AsyncStorage.getItem('signUser');
+            const dataItems = JSON.parse(data);
+            console.log('getUser value from local storage', dataItems);
+            setGetUserName(oldArray => [...oldArray, dataItems]);
+        } catch (error) {
+            console.log('Error', error);
+        }
+    }
+    React.useEffect(() => {
+        getUserVal();
+
+    }, []);
+    React.useEffect(() => {
+        // return;
+    }, [getUserName])
     //LOGIN VALIDATION
     const loginValidation = () => {
         if (username.length === 0) {
@@ -30,6 +74,15 @@ const LoginScreen = ({ navigation: { navigate } }) => {
         else if (checked === true) {
             Alert.alert('Temporarily user not allowed')
         }
+        // else if (username !== getUserName.username && password !== getUserName.password) {
+        //     Alert.alert("Please register username and password doesn't exists")
+        // }
+
+
+        else if (!dataAra.includes(username)) {
+            Alert.alert("Please register username and password doesn't exists")
+        }
+        // else if (checked === false && username === getUserName.username && password === getUserName.password) {
         else if (checked === false && username && password) {
             navigate('Home');
             Alert.alert('Thank you')
@@ -37,8 +90,9 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             setRememberChecked(false);
             setUsername('');
             setPassword('');
-            setFocus({  style2: false})
-
+            setFocus({ style2: false })
+            storeUser();
+            getUserVal();
         }
         else {
             Alert.alert('Your login details invalid');
@@ -49,11 +103,25 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     //SIGN PAGE 
     const [ifSignIn, setIfSignIn] = React.useState(false);
     const [confirmPassword, setConfirmPassword] = React.useState('');
-
-    // SIGN VALIDATION 
+    //SIGNUP LOCALSTORAGE
+    const signupValue = {
+        username,
+        // password
+    }
+    const storeUser = async () => {
+        try {
+            await AsyncStorage.setItem('signUser', JSON.stringify(signupValue));
+        } catch (error) {
+            console.log('error', error);
+        }
+    }
+    // SIGNUP VALIDATION 
     const signUpValidation = () => {
         if (username.length === 0) {
             Alert.alert('Please Enter your username');
+        }
+        else if (username === getUserName.username) {
+            Alert.alert('Username already exists')
         }
         else if (password.length === 0) {
             Alert.alert('Please Enter your password')
@@ -75,7 +143,9 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             setPassword('');
             setConfirmPassword('')
             setIfSignIn(false);
-            setFocus({style3:false})
+            setFocus({ style3: false });
+            storeUser();
+            getUserVal();
         }
         else {
             setIfSignIn(false);
@@ -264,7 +334,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                                     setChecked(false);
                                     setUsername('');
                                     setPassword('');
-                                    setFocus({  style2: false})
+                                    setFocus({ style2: false })
 
                                 }}>
                                 <Text style={styles.singupText}>{"Signup"}</Text>
@@ -278,7 +348,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                                     setUsername('');
                                     setPassword('');
                                     setConfirmPassword('');
-                                    setFocus({  style2: false})
+                                    setFocus({ style2: false })
                                 }}>
                                 <Text style={styles.singupText}>{'Login'}</Text>
                             </TouchableOpacity>

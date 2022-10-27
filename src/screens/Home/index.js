@@ -15,7 +15,7 @@ import {
 } from 'firebase/database';
 import LinearGradient from 'react-native-linear-gradient';
 
-const HomeScreen = ({navigation:{navigate}}) => {
+const HomeScreen = ({ navigation: { navigate } }) => {
     //FILE UPLOAD
     const [fileResponse, setFileResponse] = React.useState([]);
     // console.log('fileresponse',fileResponse)
@@ -344,20 +344,44 @@ const HomeScreen = ({navigation:{navigate}}) => {
 
     }
     // //FIREBASE WORKS...
-    const [loader,setLoader] = React.useState(false);
+    const [loader, setLoader] = React.useState(false);
+    // GET LOCALSTORAGE FROM SIGNUP
+    const [userNameVal, setUserNameVal] = React.useState('')
+    // const [userNameVal, setUserNameVal] = React.useState([]);
+    console.log('userNameVal', userNameVal.username + userNameVal.password);
+    React.useEffect(() => {
+        getUserName();
+    }, []);
     React.useEffect(() => {
         setLoader(true);
-        return onValue(ref(db, '/addperson'), querySnapShot => {
+        return onValue(ref(db, `/addperson${userNameVal.username}`), querySnapShot => {
+            // return onValue(ref(db, '/addperson'), querySnapShot => {
             let data = querySnapShot.val() || {};
             let todoItems = { ...data };
             console.log('Useefffect todoItems', todoItems)
             setGetData(todoItems);
             setLoader(false);
         });
-    }, []);
+    }, [userNameVal]);
+
+    const getUserName = async () => {
+        try {
+            const data = await AsyncStorage.getItem('signUser');
+            const dataItem = JSON.parse(data);
+            console.log('localstorage get items', dataItem);
+            setUserNameVal(dataItem)
+
+        } catch (error) {
+            console.log('error', error);
+        }
+    }
+
+    // const randormNumber = Math.floor(Math.random() *3);
+    const usernameFor = 'thameem';
 
     function addNewPerson() {
-        push(ref(db, '/addperson'), {
+        push(ref(db, `/addperson${userNameVal.username}`), {
+            // push(ref(db, '/addperson'), {
             //   addperson: value,
             //    value,
             'Name': name,
@@ -469,7 +493,7 @@ const HomeScreen = ({navigation:{navigate}}) => {
     return (
         <View style={styles.container}>
             {/* <View style={[styles.headerContainer, viewDetails && { marginVertical: 35 }]}> */}
-            <View style={[styles.headerContainer, viewDetails  && addPersonKey.length > 0 ? { marginVertical: 35 } : null]}>
+            <View style={[styles.headerContainer, viewDetails && addPersonKey.length > 0 ? { marginVertical: 35 } : null]}>
                 <TouchableOpacity style={[styles.addPersonButton, addPerson && { backgroundColor: '#28C76F' }]}
                     onPress={() => {
                         // Alert.alert('Add Person');
@@ -514,7 +538,7 @@ const HomeScreen = ({navigation:{navigate}}) => {
                         <View style={customStyle1}>
                             <TextInput
                                 placeholder='Name'
-                               placeholderTextColor={'#C4C4C4'}
+                                placeholderTextColor={'#C4C4C4'}
                                 value={name}
                                 onChangeText={(text) => {
                                     console.log(text);
@@ -573,7 +597,7 @@ const HomeScreen = ({navigation:{navigate}}) => {
                         <View style={customStyle3}>
                             <TextInput
                                 placeholder='Contact No'
-                               placeholderTextColor={'#C4C4C4'}
+                                placeholderTextColor={'#C4C4C4'}
                                 value={contact}
                                 onChangeText={(text) => {
                                     console.log(text);
@@ -592,7 +616,7 @@ const HomeScreen = ({navigation:{navigate}}) => {
                         <View style={customStyle4}>
                             <TextInput
                                 placeholder='Address'
-                               placeholderTextColor={'#C4C4C4'}
+                                placeholderTextColor={'#C4C4C4'}
                                 value={address}
                                 onChangeText={(text) => {
                                     console.log(text);
@@ -652,7 +676,7 @@ const HomeScreen = ({navigation:{navigate}}) => {
                         <View style={customStyle5}>
                             <TextInput
                                 placeholder='Advanced Amount'
-                               placeholderTextColor={'#C4C4C4'}
+                                placeholderTextColor={'#C4C4C4'}
                                 value={advancedAmount}
                                 onChangeText={(text) => {
                                     console.log(text);
@@ -697,7 +721,7 @@ const HomeScreen = ({navigation:{navigate}}) => {
                         </TouchableOpacity>
                     </View>
                     <TouchableOpacity
-                     style={styles.addButton}
+                        style={styles.addButton}
                         onPress={
                             () => {
                                 addPersonValidation()
@@ -706,10 +730,11 @@ const HomeScreen = ({navigation:{navigate}}) => {
                         <Text style={styles.addText}>{"Add"}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                     style={styles.addButton}
+                        style={styles.addButton}
                         onPress={
                             () => {
-                                navigate('Login')
+                                navigate('Login');
+                                getUserName();
                             }
                         }>
                         <Text style={styles.addText}>{"Logout"}</Text>
@@ -728,7 +753,7 @@ const HomeScreen = ({navigation:{navigate}}) => {
                         <View style={customStyle6}>
                             <TextInput
                                 placeholder='Room No'
-                               placeholderTextColor={'#C4C4C4'}
+                                placeholderTextColor={'#C4C4C4'}
                                 value={roomNo1}
                                 onChangeText={(text) => {
                                     console.log(text);
@@ -747,7 +772,7 @@ const HomeScreen = ({navigation:{navigate}}) => {
                         <View style={customStyle7}>
                             <TextInput
                                 placeholder='No of Person'
-                               placeholderTextColor={'#C4C4C4'}
+                                placeholderTextColor={'#C4C4C4'}
                                 value={noOfPerson}
                                 onChangeText={(text) => {
                                     console.log(text);
@@ -761,14 +786,14 @@ const HomeScreen = ({navigation:{navigate}}) => {
                         </View>
                     </View>
 
-                    <TouchableOpacity 
-                               style={styles.addButton}
+                    <TouchableOpacity
+                        style={styles.addButton}
                         onPress={
                             () => {
                                 addRoomValidation()
                             }
-                        } 
-                        
+                        }
+
                     >
 
                         <Text style={styles.addText}>{"Add"}</Text>
@@ -801,26 +826,26 @@ const HomeScreen = ({navigation:{navigate}}) => {
                 >
                     {
                         loader ?
-                         <ActivityIndicator
-                            size={"large"}
-                            color="#00C0F0"
-                        />
-                        :
-                    addPersonKey.length >= 1 ? (
-                        addPersonKey.map(key => (
-                            <AddItems
-                                key={key}
-                                id={key}
-                                addItems={getData[key]}
+                            <ActivityIndicator
+                                size={"large"}
+                                color="#00C0F0"
                             />
-                        ))
-                    ) : (
-                        // <ActivityIndicator
-                        //     size={"large"}
-                        //     color="#00C0F0"
-                        // />
-                        <Text>No Data</Text>
-                    )
+                            :
+                            addPersonKey.length >= 1 ? (
+                                addPersonKey.map(key => (
+                                    <AddItems
+                                        key={key}
+                                        id={key}
+                                        addItems={getData[key]}
+                                    />
+                                ))
+                            ) : (
+                                // <ActivityIndicator
+                                //     size={"large"}
+                                //     color="#00C0F0"
+                                // />
+                                <Text>No Data</Text>
+                            )
                     }
                 </ScrollView>
             }
