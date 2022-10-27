@@ -39,7 +39,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     }, []);
     // DATE
     const [date, setDate] = React.useState(new Date())
-    console.log('date', date);
+    // console.log('date', date);
     const [open, setOpen] = React.useState(false)
 
     //TextInput Focus
@@ -63,9 +63,9 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
     //File upload image
     const [fetchImage, setFetchImage] = React.useState('')
-    console.log('fetchImage', fetchImage)
+    // console.log('fetchImage', fetchImage)
     const icon = fetchImage === '' ? require('../../assets/images/no_image.png') : { uri: fetchImage }
-    console.log('fetchImage Icon ', icon)
+    // console.log('fetchImage Icon ', icon)
     //ADD PERSON STATE
     const [name, setName] = React.useState('');
     const [roomNo, setRoomNo] = React.useState('');
@@ -74,11 +74,11 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     const [advancedAmount, setAdvancedAmount] = React.useState('');
     //ADD ROOM STATE
     const [roomNo1, setRoomNo1] = React.useState('');
-    console.log('ADD ROOM STATE OF ROOMNO1', roomNo1);
+    // console.log('ADD ROOM STATE OF ROOMNO1', roomNo1);
     const [noOfPerson, setNoOfPerson] = React.useState('');
     //DROPDOWN SELECT PICKER...
     const [selectedRoomNo, setSelectedRoomNo] = React.useState();
-    console.log('selectedRoomNo', selectedRoomNo)
+    // console.log('selectedRoomNo', selectedRoomNo)
 
     //ADD PERSON VALIDATION
     const addPersonValidation = () => {
@@ -134,7 +134,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         'Advanced amount': advancedAmount,
         'Date': date,
     };
-    console.log("value", value);
+    // console.log("value", value);
 
     const storeUser = async () => {
         try {
@@ -178,7 +178,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         'Room_no': roomNo1,
         // noOfPerson
     }
-    console.log('ValueRoom', valueRoom);
+    // console.log('ValueRoom', valueRoom);
 
     const storeRoomUser = async () => {
         try {
@@ -191,12 +191,12 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
     //LOCALSTORAGE FOR ADD ROOM TO ADD PERSON DETAILS IN GET DATA...
     const [getData1, setGetData1] = React.useState([]);
-    console.log('getData1', getData1);
+    // console.log('getData1', getData1);
     const getRoom = async () => {
         try {
             const savedRoomNo = await AsyncStorage.getItem('valueRoom');
             const currentRoomNo = JSON.parse(savedRoomNo);
-            console.log('CurrentRoomNo', currentRoomNo);
+            // console.log('CurrentRoomNo', currentRoomNo);
             setGetData1(oldArray => [...oldArray, currentRoomNo]);
         } catch (error) {
             console.log('Error', error)
@@ -205,12 +205,12 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
     //LOCALSTORAGE FOR VIEW DETAILS IN GET DATA...
     const [getData, setGetData] = React.useState([]);
-    console.log('getData', JSON.stringify(getData));
+    // console.log('getData', JSON.stringify(getData));
     const getUser = async () => {
         try {
             const savedUser = await AsyncStorage.getItem('user');
             const currentUser = JSON.parse(savedUser);
-            console.log('CurrentUser', currentUser);
+            // console.log('CurrentUser', currentUser);
             // setGetData(currentUser);
             setGetData(oldArray => [...oldArray, currentUser]);
 
@@ -227,16 +227,16 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     const [userData, setUserData] = React.useState([]);
     const dataRetrieve = [];
     dataRetrieve.push(userData);
-    console.log("userData", userData);
-    console.log("dataRetrieve", dataRetrieve);
+    // console.log("userData", userData);
+    // console.log("dataRetrieve", dataRetrieve);
 
     //ROOM
     const [roomNoData, setRoomNoData] = React.useState([]);
-    console.log('ROOM NO DATA SINGLE TIME RENDER', roomNoData);
+    // console.log('ROOM NO DATA SINGLE TIME RENDER', roomNoData);
     const roomDataRetrieve = [];
     roomDataRetrieve.push(roomNoData);
-    console.log('roomDataRetrieve', roomDataRetrieve);
-    console.log('roomDataRetrieve Object.values', Object.values(roomDataRetrieve));
+    // console.log('roomDataRetrieve', roomDataRetrieve);
+    // console.log('roomDataRetrieve Object.values', Object.values(roomDataRetrieve));
 
     // let element = '';
     // // for (let index = 0; index < roomDataRetrieve.length; index++) {
@@ -250,7 +250,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     React.useEffect(() => {
         //ROOM NO  
         const roomNo = getData1.map((item, index) => {
-            console.log('useEffect roomNo item Object.values', item);
+            // console.log('useEffect roomNo item Object.values', item);
             let dataPass = item === null ? 101 : JSON.parse(item.Room_no);
             setRoomNoData(dataPass);
         });
@@ -286,7 +286,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     }, []);
     //FLATLIST DATE
     const renderItem = ({ item }) => {
-        console.log('item flatlist', item)
+        // console.log('item flatlist', item)
         // console.log('item Object.keys(item)[0] flatlist', Object.values(item)[0]);
         //    let datalist = [];
         //    datalist.push(Object.values(item)[6]);
@@ -348,7 +348,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     // GET LOCALSTORAGE FROM SIGNUP
     const [userNameVal, setUserNameVal] = React.useState('')
     // const [userNameVal, setUserNameVal] = React.useState([]);
-    console.log('userNameVal', userNameVal.username + userNameVal.password);
+    // console.log('userNameVal', userNameVal.username + userNameVal.password);
     React.useEffect(() => {
         getUserName();
     }, []);
@@ -358,7 +358,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             // return onValue(ref(db, '/addperson'), querySnapShot => {
             let data = querySnapShot.val() || {};
             let todoItems = { ...data };
-            console.log('Useefffect todoItems', todoItems)
+            // console.log('Useefffect todoItems', todoItems)
             setGetData(todoItems);
             setLoader(false);
         });
@@ -368,7 +368,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         try {
             const data = await AsyncStorage.getItem('signUser');
             const dataItem = JSON.parse(data);
-            console.log('localstorage get items', dataItem);
+            // console.log('localstorage get items', dataItem);
             setUserNameVal(dataItem)
 
         } catch (error) {
@@ -411,22 +411,22 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     //   )}
 
     const AddItems = ({ addItems: { Name, Room_no, Contact, Address, Image, Advanced_amount, date } }) => {
-        console.log('AddItems addperson Name', Name)
-        console.log('AddItems addperson Room_no', Room_no)
-        console.log('AddItems addperson Contact', Contact)
-        console.log('AddItems addperson Address', Address)
-        console.log('AddItems addperson Image', Image)
-        console.log('AddItems addperson Advanced_amount', Advanced_amount)
-        console.log('AddItems addperson Date', date)
+        // console.log('AddItems addperson Name', Name)
+        // console.log('AddItems addperson Room_no', Room_no)
+        // console.log('AddItems addperson Contact', Contact)
+        // console.log('AddItems addperson Address', Address)
+        // console.log('AddItems addperson Image', Image)
+        // console.log('AddItems addperson Advanced_amount', Advanced_amount)
+        // console.log('AddItems addperson Date', date)
         // const image = JSON.stringify(Image)
         // console.log('AddItems addperson JSON image',image)
         // let getDat = [];
         // const image = Image
         // getDat.push(image)
         let hello = date;
-        console.log('hello', hello);
+        // console.log('hello', hello);
         let dates = new Date(hello);
-        console.log('AddItems to date', dates.getDate().toString() + '/' + (dates.getMonth().toString() + 1) + '/' + dates.getFullYear().toString())
+        // console.log('AddItems to date', dates.getDate().toString() + '/' + (dates.getMonth().toString() + 1) + '/' + dates.getFullYear().toString())
 
         return (
             <View>
@@ -541,7 +541,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                 placeholderTextColor={'#C4C4C4'}
                                 value={name}
                                 onChangeText={(text) => {
-                                    console.log(text);
+                                    // console.log(text);
                                     setName(text);
                                 }}
                                 onFocus={() => setFocus({ style1: !false })}
@@ -600,7 +600,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                 placeholderTextColor={'#C4C4C4'}
                                 value={contact}
                                 onChangeText={(text) => {
-                                    console.log(text);
+                                    // console.log(text);
                                     setContact(text)
                                 }}
                                 onFocus={() => setFocus({ style3: !false })}
@@ -619,7 +619,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                 placeholderTextColor={'#C4C4C4'}
                                 value={address}
                                 onChangeText={(text) => {
-                                    console.log(text);
+                                    // console.log(text);
                                     setAddress(text);
                                 }}
                                 onFocus={() => setFocus({ style4: !false })}
@@ -679,7 +679,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                 placeholderTextColor={'#C4C4C4'}
                                 value={advancedAmount}
                                 onChangeText={(text) => {
-                                    console.log(text);
+                                    // console.log(text);
                                     setAdvancedAmount(text)
                                 }}
                                 onFocus={() => setFocus({ style5: !false })}
@@ -756,7 +756,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                 placeholderTextColor={'#C4C4C4'}
                                 value={roomNo1}
                                 onChangeText={(text) => {
-                                    console.log(text);
+                                    // console.log(text);
                                     setRoomNo1(text);
                                 }}
                                 onFocus={() => setFocus({ style6: !false })}
@@ -775,7 +775,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                 placeholderTextColor={'#C4C4C4'}
                                 value={noOfPerson}
                                 onChangeText={(text) => {
-                                    console.log(text);
+                                    // console.log(text);
                                     setNoOfPerson(text);
                                 }}
                                 onFocus={() => setFocus({ style7: !false })}

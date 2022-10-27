@@ -2,10 +2,12 @@ import { StyleSheet, Text, TextInput, View, Image, TouchableOpacity, Alert } fro
 import React from 'react'
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { onValue, push, ref } from 'firebase/database';
+import { db } from '../Firebase/firebase-config';
 
 const LoginScreen = ({ navigation: { navigate } }) => {
     const [checked, setChecked] = React.useState(false);
-    console.log('state checked', checked);
+    // console.log('state checked', checked);
     const [rememberChecked, setRememberChecked] = React.useState(false);
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
@@ -18,7 +20,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     const customStyle2 = !focus.style2 ? styles.textinputTextContainer : styles.textinputTextContainerFocus;
     const customStyle3 = !focus.style3 ? styles.textinputTextContainer1 : styles.textinputTextContainerFocus1;
     // GET LOCALSTORAGE FOR VALIDATION PURPOSE
-    const [getUserName, setGetUserName] = React.useState([]);
+    const [getUserName, setGetUserName] = React.useState('');
     console.log('getusername ', getUserName);
     let dataAra = [];
     Object.keys(getUserName).forEach((key) => {
@@ -36,19 +38,20 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     let element = '';
     for (let index = 0; index < getUserName.length; index++) {
         element = getUserName[index].username;
-        console.log('element', element);
+        // console.log('element', element);
 
     }
     const dataCheck = [];
     dataCheck.push(element);
     console.log('Datacheck', dataCheck);
-    console.log('element3', element);
+    // console.log('element3', element);
     const getUserVal = async () => {
         try {
             const data = await AsyncStorage.getItem('signUser');
             const dataItems = JSON.parse(data);
-            console.log('getUser value from local storage', dataItems);
-            setGetUserName(oldArray => [...oldArray, dataItems]);
+            // console.log('getUser value from local storage', dataItems);
+            // setGetUserName(oldArray => [...oldArray, dataItems]);
+            setGetUserName(dataItems);
         } catch (error) {
             console.log('Error', error);
         }
@@ -60,6 +63,38 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     React.useEffect(() => {
         // return;
     }, [getUserName])
+    // SIGNUP USERNAME STORE FOR FIREBASE REALTIME DATABASE
+    function newUserName() {
+        push(ref(db, `/username${getUserName.username}`), {
+            username
+        });
+    }
+    //GET DATA FROM FIREBASE REALTIME DATABASE
+    const [userNameFb, setUserNameFb] = React.useState({});
+    console.log('userNameFb', userNameFb);
+
+    React.useEffect(() => {
+        return onValue(ref(db, `/username${getUserName.username}`), querySnapShot => {
+            let data = querySnapShot.val() || {};
+            let userNameData = { ...data };
+            console.log('useEffect userNameData', userNameData);
+            //  setUserNameFb(userNameData);
+            setUserNameFb(userNameData);
+        });
+    }, [])
+
+    const userNameKey = Object.keys(userNameFb);
+    console.log('userNameKey=====>', userNameKey);
+    let userNameValue = [];
+    // function hello() {
+    //     let keyss = userNameKey.length >= 1 ? userNameKey.map((key)=>{
+    //        return userNameValue.push(userNameFb[key])
+    //     })
+    // }
+    React.useEffect(()=>{
+      let useNameValue =userNameKey.length >= 1 ? userNameKey.map((key)=>userNameFb[key]) : null;
+      console.log('The Useeffect userNameValue',useNameValue);
+    },[])
     //LOGIN VALIDATION
     const loginValidation = () => {
         if (username.length === 0) {
@@ -130,7 +165,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             Alert.alert('Please Enter your confirm password')
         }
         else if (password !== confirmPassword) {
-            Alert.alert('Please Enter passoword properly')
+            Alert.alert('Please Enter password properly')
         }
         else if (checked === true) {
             Alert.alert('Temporarily user not allowed')
@@ -149,6 +184,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             setFocus({ style3: false });
             storeUser();
             getUserVal();
+            newUserName();
         }
         else {
             setIfSignIn(false);
@@ -180,7 +216,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                             placeholder='Your Username'
                             placeholderTextColor={'#C4C4C4'}
                             onChangeText={(usernameTextValue) => {
-                                console.log('usernameTextValue', usernameTextValue);
+                                // console.log('usernameTextValue', usernameTextValue);
                                 setUsername(usernameTextValue);
                             }}
                             value={username}
@@ -200,7 +236,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                             placeholder='Your Password'
                             placeholderTextColor={'#C4C4C4'}
                             onChangeText={(passwordTextValue) => {
-                                console.log(passwordTextValue);
+                                // console.log(passwordTextValue);
                                 setPassword(passwordTextValue);
                             }}
                             value={password}
@@ -222,7 +258,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                                 placeholder='Confirm Password'
                                 placeholderTextColor={'#C4C4C4'}
                                 onChangeText={(passwordTextValue) => {
-                                    console.log(passwordTextValue);
+                                    // console.log(passwordTextValue);
                                     setConfirmPassword(passwordTextValue);
                                 }}
                                 value={confirmPassword}
@@ -255,7 +291,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                                         // setChecked(!checked)
                                         // console.log("222", !checked);
                                         setRememberChecked(!rememberChecked)
-                                        console.log("rememberChecked", !rememberChecked);
+                                        // console.log("rememberChecked", !rememberChecked);
 
                                     }}
                                 />
@@ -285,7 +321,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                             disableBuiltInState
                             onPress={(secondCheck) => {
                                 setChecked(!checked)
-                                console.log("Admin", !checked);
+                                // console.log("Admin", !checked);
                             }}
                         />
                         <Text style={styles.adminLabelText}>{"Admin"}</Text>
@@ -305,7 +341,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                             disableBuiltInState
                             onPress={(secondCheck) => {
                                 setChecked(!checked)
-                                console.log("User", !checked);
+                                // console.log("User", !checked);
                             }}
                         />
                         <Text style={styles.userLabelText}>{"User"}</Text>
