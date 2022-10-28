@@ -205,7 +205,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
     //LOCALSTORAGE FOR VIEW DETAILS IN GET DATA...
     const [getData, setGetData] = React.useState([]);
-    // console.log('getData', JSON.stringify(getData));
+    console.log('getData', JSON.stringify(getData));
     const getUser = async () => {
         try {
             const savedUser = await AsyncStorage.getItem('user');
@@ -354,11 +354,11 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     }, []);
     React.useEffect(() => {
         setLoader(true);
-        return onValue(ref(db, `/addperson${userNameVal.username}`), querySnapShot => {
+        return onValue(ref(db, `/addperson_${userNameVal.username}`), querySnapShot => {
             // return onValue(ref(db, '/addperson'), querySnapShot => {
             let data = querySnapShot.val() || {};
             let todoItems = { ...data };
-            // console.log('Useefffect todoItems', todoItems)
+            console.log('Useefffect todoItems', todoItems)
             setGetData(todoItems);
             setLoader(false);
         });
@@ -380,7 +380,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     const usernameFor = 'thameem';
 
     function addNewPerson() {
-        push(ref(db, `/addperson${userNameVal.username}`), {
+        push(ref(db, `/addperson_${userNameVal.username}`), {
             // push(ref(db, '/addperson'), {
             //   addperson: value,
             //    value,
@@ -396,7 +396,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         // setPresentTodo('');
     }
     const addPersonKey = Object.keys(getData);
-    console.log('addPersonKey is =======>', addPersonKey);
+    // console.log('addPersonKey is =======>', addPersonKey);
     //
     // {todosKeys.length > 0 ? (
     //     todosKeys.map(key => (
