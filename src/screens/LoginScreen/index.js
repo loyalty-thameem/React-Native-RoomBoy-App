@@ -199,243 +199,246 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     const [loginLoader, setLoginLoader] = React.useState(false);
     setTimeout(() => {
         setLoginLoader(true);
-    }, 3000);
+    }, 10000);
     return (
-        <>
-            {
-                !loginLoader ? <ActivityIndicator size={'large'} color="#00C0F0" />
-                    :
-                    <View style={styles.container}>
 
-                        <View style={styles.backgroundImageContainer}>
-                            <Image
-                                source={icon}
-                                style={styles.backgroundImage}
+        <View style={styles.container}>
+
+            <View style={styles.backgroundImageContainer}>
+                <Image
+                    source={icon}
+                    style={styles.backgroundImage}
+                />
+            </View>
+
+            <View style={styles.curveMainContainer}>
+
+                <View style={styles.customNavigatorContainer}>
+                    <Text style={styles.loginText}>{ifSignIn ? "Signup" : "Login"}</Text>
+                </View>
+                <View style={styles.inputFieldContainer}>
+                    <View style={styles.phoneLabelContainer}>
+                        <Text style={styles.phoneText}>{"Username"}</Text>
+                    </View>
+                    <View style={customStyle1}>
+                        <TextInput
+                            placeholder='Your Username'
+                            placeholderTextColor={'#C4C4C4'}
+                            onChangeText={(usernameTextValue) => {
+                                // console.log('usernameTextValue', usernameTextValue);
+                                setUsername(usernameTextValue);
+                            }}
+                            value={username}
+                            style={styles.usernameTextInput}
+                            onFocus={() => setFocus({ style1: !false })}
+                        />
+                    </View>
+                </View>
+                <View style={styles.inputFieldContainer2}>
+                    <View style={styles.passwordLabelContainer}>
+                        <Text style={styles.passwordText}>{"Password"}</Text>
+                    </View>
+                    <View style={customStyle2}>
+                        <TextInput
+                            placeholder='Your Password'
+                            placeholderTextColor={'#C4C4C4'}
+                            onChangeText={(passwordTextValue) => {
+                                // console.log(passwordTextValue);
+                                setPassword(passwordTextValue);
+                            }}
+                            value={password}
+                            style={styles.passwordTextInput}
+                            onFocus={() => setFocus({ style2: !false })}
+                            secureTextEntry={true}
+                        />
+                    </View>
+                </View>
+                {
+                    ifSignIn &&
+                    <View style={styles.inputFieldContainer3}>
+                        <View style={styles.passwordLabelContainer}>
+                            <Text style={styles.passwordText}>{"Confirm Password"}</Text>
+                        </View>
+                        <View style={customStyle3}>
+                            <TextInput
+                                placeholder='Confirm Password'
+                                placeholderTextColor={'#C4C4C4'}
+                                onChangeText={(passwordTextValue) => {
+                                    // console.log(passwordTextValue);
+                                    setConfirmPassword(passwordTextValue);
+                                }}
+                                value={confirmPassword}
+                                style={styles.confirmPasswordTextInput}
+                                onFocus={() => setFocus({ style3: !false })}
+                                secureTextEntry={true}
                             />
                         </View>
-
-                        <View style={styles.curveMainContainer}>
-
-                            <View style={styles.customNavigatorContainer}>
-                                <Text style={styles.loginText}>{ifSignIn ? "Signup" : "Login"}</Text>
-                            </View>
-                            <View style={styles.inputFieldContainer}>
-                                <View style={styles.phoneLabelContainer}>
-                                    <Text style={styles.phoneText}>{"Username"}</Text>
-                                </View>
-                                <View style={customStyle1}>
-                                    <TextInput
-                                        placeholder='Your Username'
-                                        placeholderTextColor={'#C4C4C4'}
-                                        onChangeText={(usernameTextValue) => {
-                                            // console.log('usernameTextValue', usernameTextValue);
-                                            setUsername(usernameTextValue);
-                                        }}
-                                        value={username}
-                                        style={styles.usernameTextInput}
-                                        onFocus={() => setFocus({ style1: !false })}
-                                    />
-                                </View>
-                            </View>
-                            <View style={styles.inputFieldContainer2}>
-                                <View style={styles.passwordLabelContainer}>
-                                    <Text style={styles.passwordText}>{"Password"}</Text>
-                                </View>
-                                <View style={customStyle2}>
-                                    <TextInput
-                                        placeholder='Your Password'
-                                        placeholderTextColor={'#C4C4C4'}
-                                        onChangeText={(passwordTextValue) => {
-                                            // console.log(passwordTextValue);
-                                            setPassword(passwordTextValue);
-                                        }}
-                                        value={password}
-                                        style={styles.passwordTextInput}
-                                        onFocus={() => setFocus({ style2: !false })}
-                                        secureTextEntry={true}
-                                    />
-                                </View>
-                            </View>
-                            {
-                                ifSignIn &&
-                                <View style={styles.inputFieldContainer3}>
-                                    <View style={styles.passwordLabelContainer}>
-                                        <Text style={styles.passwordText}>{"Confirm Password"}</Text>
-                                    </View>
-                                    <View style={customStyle3}>
-                                        <TextInput
-                                            placeholder='Confirm Password'
-                                            placeholderTextColor={'#C4C4C4'}
-                                            onChangeText={(passwordTextValue) => {
-                                                // console.log(passwordTextValue);
-                                                setConfirmPassword(passwordTextValue);
-                                            }}
-                                            value={confirmPassword}
-                                            style={styles.confirmPasswordTextInput}
-                                            onFocus={() => setFocus({ style3: !false })}
-                                            secureTextEntry={true}
-                                        />
-                                    </View>
-                                </View>
-                            }
-                            {
-                                !ifSignIn &&
-                                <View style={styles.remembermeAndForgetContainer}>
-                                    <View style={styles.rememberContainer}>
-                                        <View style={styles.squareCheckBoxContainer}>
-                                            <BouncyCheckbox
-                                                size={20}
-                                                fillColor="#7B61FF"
-                                                unfillColor="#FFFFFF"
-                                                iconStyle={{ borderColor: 'red', color: 'black' }}
-                                                innerIconStyle={{ borderWidth: 2, color: 'black' }}
-                                                checkIconImageSource={
-                                                    require('../../assets/images/checkicon.png')
-                                                }
-                                                textStyle={{ fontFamily: 'JosefinSans-Regular' }}
-                                                isChecked={rememberChecked}
-                                                disableBuiltInState
-                                                onPress={(rememberCheck) => {
-                                                    // setChecked(!checked)
-                                                    // console.log("222", !checked);
-                                                    setRememberChecked(!rememberChecked)
-                                                    console.log("rememberChecked", !rememberChecked);
-                                                }}
-                                            />
-                                        </View>
-                                        <View style={styles.rememberLabelContainer}>
-                                            <Text style={styles.rememberLabelText}>{"Remember me"}</Text>
-                                        </View>
-                                    </View>
-                                    <TouchableOpacity style={styles.forgetPasswordLabelContainer}>
-                                        <Text style={styles.forgetPasswordLabelText}>{"Forget password?"}</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            }
-                            <View style={styles.adminOrUserContainer}>
-                                <View style={styles.adminContainer}>
-                                    <BouncyCheckbox
-                                        size={25}
-                                        fillColor="#0396FF"
-                                        unfillColor="white"
-                                        iconStyle={{ borderColor: 'red', color: 'black' }}
-                                        innerIconStyle={{ borderWidth: 2, color: 'black' }}
-                                        checkIconImageSource={
-                                            require('../../assets/images/checkicon.png')
-                                        }
-                                        textStyle={{ fontFamily: 'JosefinSans-Regular' }}
-                                        isChecked={!checked}
-                                        disableBuiltInState
-                                        onPress={(secondCheck) => {
-                                            setChecked(!checked)
-                                            console.log("Admin", !checked);
-                                        }}
-                                    />
-                                    <Text style={styles.adminLabelText}>{"Admin"}</Text>
-                                </View>
-                                <View style={styles.userLabelContainer}>
-                                    <BouncyCheckbox
-                                        size={25}
-                                        fillColor="#0396FF"
-                                        unfillColor="white"
-                                        iconStyle={{ borderColor: 'red', color: 'black' }}
-                                        innerIconStyle={{ borderWidth: 2, color: 'black' }}
-                                        checkIconImageSource={
-                                            require('../../assets/images/checkicon.png')
-                                        }
-                                        textStyle={{ fontFamily: 'JosefinSans-Regular' }}
-                                        isChecked={checked}
-                                        disableBuiltInState
-                                        onPress={(secondCheck) => {
-                                            setChecked(!checked)
-                                            console.log("User", !checked);
-                                        }}
-                                    />
-                                    <Text style={styles.userLabelText}>{"User"}</Text>
-                                </View>
-                            </View>
-                            {!ifSignIn ?
-                                <TouchableOpacity style={styles.loginButtonContainer}
-                                    onPress={() => {
-
-                                        loginValidation()
-                                    }}>
-
-                                    <Text style={styles.loginLabelText}>{"Login"}</Text>
-                                </TouchableOpacity>
-                                :
-                                <TouchableOpacity style={styles.loginButtonContainer}
-                                    onPress={() => {
-
-                                        signUpValidation()
-                                    }}>
-
-                                    <Text style={styles.loginLabelText}>{'Signup'}</Text>
-                                </TouchableOpacity>
-                            }
-                            <View style={styles.orAndSignupContainer}>
-                                <Text style={styles.orText}>{"OR"}</Text>
-                                {
-                                    !ifSignIn
-                                        ?
-                                        <TouchableOpacity style={styles.singupContainer}
-                                            onPress={() => {
-
-                                                setIfSignIn(true);
-                                                setChecked(false);
-                                                setUsername('');
-                                                setPassword('');
-                                                setFocus({ style2: false })
-                                            }}>
-
-                                            <Text style={styles.singupText}>{"Signup"}</Text>
-                                        </TouchableOpacity>
-                                        :
-                                        <TouchableOpacity style={styles.singupContainer}
-                                            onPress={() => {
-
-                                                setIfSignIn(false);
-                                                setChecked(false);
-                                                setRememberChecked(false);
-                                                setUsername('');
-                                                setPassword('');
-                                                setConfirmPassword('');
-                                                setFocus({ style2: false })
-                                            }}>
-
-                                            <Text style={styles.singupText}>{'Login'}</Text>
-                                        </TouchableOpacity>
-                                }
-
-                            </View>
-                            {
-                                !ifSignIn &&
-                                <View style={styles.socialLoginContainer}>
-                                    <TouchableOpacity style={styles.facebookImageContainer}>
-                                        <Image
-                                            style={styles.facebookImage}
-                                            source={require('../../assets/images/facebook_logo.jpg')}
-                                        />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.googleImageContainer}>
-                                        <Image
-                                            style={styles.googleImage}
-                                            source={require('../../assets/images/google_logo.png')}
-                                        />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.twitterImageContainer}>
-                                        <Image
-                                            style={styles.twitterImage}
-                                            source={require('../../assets/images/twitter_logo.png')}
-                                        />
-                                    </TouchableOpacity>
-                                </View>
-                            }
-
-                        </View>
                     </View>
-            }
-        </>
+                }
+                {
+                    !ifSignIn &&
+                    <View style={styles.remembermeAndForgetContainer}>
+                        <View style={styles.rememberContainer}>
+                            <View style={styles.squareCheckBoxContainer}>
+                                <BouncyCheckbox
+                                    size={20}
+                                    fillColor="#7B61FF"
+                                    unfillColor="#FFFFFF"
+                                    iconStyle={{ borderColor: 'red', color: 'black' }}
+                                    innerIconStyle={{ borderWidth: 2, color: 'black' }}
+                                    checkIconImageSource={
+                                        require('../../assets/images/checkicon.png')
+                                    }
+                                    textStyle={{ fontFamily: 'JosefinSans-Regular' }}
+                                    isChecked={rememberChecked}
+                                    disableBuiltInState
+                                    onPress={(rememberCheck) => {
+                                        // setChecked(!checked)
+                                        // console.log("222", !checked);
+                                        setRememberChecked(!rememberChecked)
+                                        console.log("rememberChecked", !rememberChecked);
+                                    }}
+                                />
+                            </View>
+                            <View style={styles.rememberLabelContainer}>
+                                <Text style={styles.rememberLabelText}>{"Remember me"}</Text>
+                            </View>
+                        </View>
+                        <TouchableOpacity style={styles.forgetPasswordLabelContainer}>
+                            <Text style={styles.forgetPasswordLabelText}>{"Forget password?"}</Text>
+                        </TouchableOpacity>
+                    </View>
+                }
+                <View style={styles.adminOrUserContainer}>
+                    <View style={styles.adminContainer}>
+                        <BouncyCheckbox
+                            size={25}
+                            fillColor="#0396FF"
+                            unfillColor="white"
+                            iconStyle={{ borderColor: 'red', color: 'black' }}
+                            innerIconStyle={{ borderWidth: 2, color: 'black' }}
+                            checkIconImageSource={
+                                require('../../assets/images/checkicon.png')
+                            }
+                            textStyle={{ fontFamily: 'JosefinSans-Regular' }}
+                            isChecked={!checked}
+                            disableBuiltInState
+                            onPress={(secondCheck) => {
+                                setChecked(!checked)
+                                console.log("Admin", !checked);
+                            }}
+                        />
+                        <Text style={styles.adminLabelText}>{"Admin"}</Text>
+                    </View>
+                    <View style={styles.userLabelContainer}>
+                        <BouncyCheckbox
+                            size={25}
+                            fillColor="#0396FF"
+                            unfillColor="white"
+                            iconStyle={{ borderColor: 'red', color: 'black' }}
+                            innerIconStyle={{ borderWidth: 2, color: 'black' }}
+                            checkIconImageSource={
+                                require('../../assets/images/checkicon.png')
+                            }
+                            textStyle={{ fontFamily: 'JosefinSans-Regular' }}
+                            isChecked={checked}
+                            disableBuiltInState
+                            onPress={(secondCheck) => {
+                                setChecked(!checked)
+                                console.log("User", !checked);
+                            }}
+                        />
+                        <Text style={styles.userLabelText}>{"User"}</Text>
+                    </View>
+                </View>
+                {!ifSignIn ?
+                    <TouchableOpacity style={styles.loginButtonContainer}
+                        onPress={() => {
+                            {
+                                !loginLoader ? null
+                                    :
+                                    loginValidation()
+                            }
+                        }}>
+                        {
+                            !loginLoader ? <ActivityIndicator size={'large'} color="#00C0F0" />
+                                :
+                                <Text style={styles.loginLabelText}>{"Login"}</Text>
+                        }
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity style={styles.loginButtonContainer}
+                        onPress={() => {
+
+                            signUpValidation()
+                        }}>
+
+                        <Text style={styles.loginLabelText}>{'Signup'}</Text>
+                    </TouchableOpacity>
+                }
+                <View style={styles.orAndSignupContainer}>
+                    <Text style={styles.orText}>{"OR"}</Text>
+                    {
+                        !ifSignIn
+                            ?
+                            <TouchableOpacity style={styles.singupContainer}
+                                onPress={() => {
+
+                                    setIfSignIn(true);
+                                    setChecked(false);
+                                    setUsername('');
+                                    setPassword('');
+                                    setFocus({ style2: false })
+                                }}>
+
+                                <Text style={styles.singupText}>{"Signup"}</Text>
+                            </TouchableOpacity>
+                            :
+                            <TouchableOpacity style={styles.singupContainer}
+                                onPress={() => {
+
+                                    setIfSignIn(false);
+                                    setChecked(false);
+                                    setRememberChecked(false);
+                                    setUsername('');
+                                    setPassword('');
+                                    setConfirmPassword('');
+                                    setFocus({ style2: false })
+                                }}>
+
+                                <Text style={styles.singupText}>{'Login'}</Text>
+                            </TouchableOpacity>
+                    }
+
+                </View>
+                {
+                    !ifSignIn &&
+                    <View style={styles.socialLoginContainer}>
+                        <TouchableOpacity style={styles.facebookImageContainer}>
+                            <Image
+                                style={styles.facebookImage}
+                                source={require('../../assets/images/facebook_logo.jpg')}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.googleImageContainer}>
+                            <Image
+                                style={styles.googleImage}
+                                source={require('../../assets/images/google_logo.png')}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.twitterImageContainer}>
+                            <Image
+                                style={styles.twitterImage}
+                                source={require('../../assets/images/twitter_logo.png')}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                }
+
+            </View>
+        </View>
+
+
     )
 }
 
