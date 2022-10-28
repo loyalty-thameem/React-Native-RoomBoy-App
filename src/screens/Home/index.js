@@ -13,10 +13,10 @@ import {
     update,
     remove
 } from 'firebase/database';
-import LinearGradient from 'react-native-linear-gradient';
 
 const HomeScreen = ({ navigation: { navigate } }) => {
-    //FILE UPLOAD
+
+    //FILE UPLOAD...
     const [fileResponse, setFileResponse] = React.useState([]);
     // console.log('fileresponse',fileResponse)
     const handleDocumentSelection = React.useCallback(async () => {
@@ -37,9 +37,10 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             console.warn(err);
         }
     }, []);
+
     // DATE
     const [date, setDate] = React.useState(new Date())
-    console.log('date', date);
+    // console.log('date', date);
     const [open, setOpen] = React.useState(false)
 
     //TextInput Focus
@@ -377,7 +378,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     }
 
     // const randormNumber = Math.floor(Math.random() *3);
-    const usernameFor = 'thameem';
+    // const usernameFor = 'thameem';
 
     function addNewPerson() {
         push(ref(db, `/addperson${userNameVal.username}`), {
@@ -411,13 +412,13 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     //   )}
 
     const AddItems = ({ addItems: { Name, Room_no, Contact, Address, Image, Advanced_amount, date } }) => {
-        console.log('AddItems addperson Name', Name)
-        console.log('AddItems addperson Room_no', Room_no)
-        console.log('AddItems addperson Contact', Contact)
-        console.log('AddItems addperson Address', Address)
-        console.log('AddItems addperson Image', Image)
-        console.log('AddItems addperson Advanced_amount', Advanced_amount)
-        console.log('AddItems addperson Date', date)
+        // console.log('AddItems addperson Name', Name)
+        // console.log('AddItems addperson Room_no', Room_no)
+        // console.log('AddItems addperson Contact', Contact)
+        // console.log('AddItems addperson Address', Address)
+        // console.log('AddItems addperson Image', Image)
+        // console.log('AddItems addperson Advanced_amount', Advanced_amount)
+        // console.log('AddItems addperson Date', date)
         // const image = JSON.stringify(Image)
         // console.log('AddItems addperson JSON image',image)
         // let getDat = [];

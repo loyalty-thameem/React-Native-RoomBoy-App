@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation: { navigate } }) => {
     const [checked, setChecked] = React.useState(false);
-    console.log('state checked', checked);
+    // console.log('state checked', checked);
     const [rememberChecked, setRememberChecked] = React.useState(false);
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
@@ -17,32 +17,33 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     const customStyle1 = !focus.style1 ? styles.usernameTextInputContainer : styles.usernameTextInputContainerFocus;
     const customStyle2 = !focus.style2 ? styles.textinputTextContainer : styles.textinputTextContainerFocus;
     const customStyle3 = !focus.style3 ? styles.textinputTextContainer1 : styles.textinputTextContainerFocus1;
-    // GET LOCALSTORAGE FOR VALIDATION PURPOSE
+
+    // GET LOCALSTORAGE FOR VALIDATION PURPOSE...
     const [getUserName, setGetUserName] = React.useState([]);
-    console.log('getusername ', getUserName);
+    // console.log('getusername ', getUserName);
+    
+    //GETTING USERNAME FROM LOCALSTORAGE...
     let dataAra = [];
     Object.keys(getUserName).forEach((key) => {
         if (getUserName[key] === getUserName[key]) {
-            console.log('The Object key getUsername', getUserName[key].username);
-            dataAra.push(getUserName[key].username);
+            // console.log('The Object key getUsername', getUserName[key].username);
+            let usernameValue = getUserName[key] === null ? 'null' : getUserName[key].username;
+            dataAra.push(usernameValue);
         }
     })
-    console.log('dataAra', dataAra);
-    // React.useEffect(()=>{
-    // return;
-    // },[username]);
-    console.log('dataAra.includes(username)', dataAra.includes(username));
+    // console.log('dataAra', dataAra);
+    // console.log('dataAra.includes(username)', dataAra.includes(username));
 
+    //NOT NEEDED BELOW LOOP CODE...
     let element = '';
     for (let index = 0; index < getUserName.length; index++) {
-        element = getUserName[index].username;
-        console.log('element', element);
-
+        element = getUserName[index] === null ?'null':getUserName[index].username;
+        // console.log('element', element);
     }
     const dataCheck = [];
     dataCheck.push(element);
-    console.log('Datacheck', dataCheck);
-    console.log('element3', element);
+    // console.log('Datacheck', dataCheck);
+    // console.log('element3', element);
     const getUserVal = async () => {
         try {
             const data = await AsyncStorage.getItem('signUser');
@@ -55,11 +56,10 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     }
     React.useEffect(() => {
         getUserVal();
-
     }, []);
     React.useEffect(() => {
-        // return;
     }, [getUserName])
+
     //LOGIN VALIDATION
     const loginValidation = () => {
         if (username.length === 0) {
@@ -74,15 +74,9 @@ const LoginScreen = ({ navigation: { navigate } }) => {
         else if (checked === true) {
             Alert.alert('Temporarily user not allowed')
         }
-        // else if (username !== getUserName.username && password !== getUserName.password) {
-        //     Alert.alert("Please register username and password doesn't exists")
-        // }
-
-
         else if (!dataAra.includes(username)) {
             Alert.alert("Please register username and password doesn't exists")
         }
-        // else if (checked === false && username === getUserName.username && password === getUserName.password) {
         else if (checked === false && username && password) {
             navigate('Home');
             Alert.alert('Thank you')
@@ -98,12 +92,15 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             Alert.alert('Your login details invalid');
         }
     }
+
     // HEADER IMAGES...
     const icon = checked === false ? require('../../assets/images/admin_background.png') : require('../../assets/images/user_background.png')
-    //SIGN PAGE 
+  
+    //SIGN PAGE...
     const [ifSignIn, setIfSignIn] = React.useState(false);
     const [confirmPassword, setConfirmPassword] = React.useState('');
-    //SIGNUP LOCALSTORAGE
+
+    //SIGNUP LOCALSTORAGE...
     const signupValue = {
         username,
         // password
@@ -115,7 +112,8 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             console.log('error', error);
         }
     }
-    // SIGNUP VALIDATION 
+
+    // SIGNUP VALIDATION... 
     const signUpValidation = () => {
         if (username.length === 0) {
             Alert.alert('Please Enter your username');
@@ -164,12 +162,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             </View>
             <View style={styles.curveMainContainer}>
                 <View style={styles.customNavigatorContainer}>
-                    {/* <View style={styles.loginContainer}> */}
                     <Text style={styles.loginText}>{ifSignIn ? "Signup" : "Login"}</Text>
-                    {/* </View> */}
-                    {/* <View style={styles.signupContainer}>
-                        <Text style={styles.signupText}>{"Sign up"}</Text>
-                    </View> */}
                 </View>
                 <View style={styles.inputFieldContainer}>
                     <View style={styles.phoneLabelContainer}>
@@ -184,10 +177,8 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                                 setUsername(usernameTextValue);
                             }}
                             value={username}
-
                             style={styles.usernameTextInput}
                             onFocus={() => setFocus({ style1: !false })}
-
                         />
                     </View>
                 </View>
@@ -204,7 +195,6 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                                 setPassword(passwordTextValue);
                             }}
                             value={password}
-
                             style={styles.passwordTextInput}
                             onFocus={() => setFocus({ style2: !false })}
                             secureTextEntry={true}
@@ -226,7 +216,6 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                                     setConfirmPassword(passwordTextValue);
                                 }}
                                 value={confirmPassword}
-
                                 style={styles.confirmPasswordTextInput}
                                 onFocus={() => setFocus({ style3: !false })}
                                 secureTextEntry={true}
@@ -256,7 +245,6 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                                         // console.log("222", !checked);
                                         setRememberChecked(!rememberChecked)
                                         console.log("rememberChecked", !rememberChecked);
-
                                     }}
                                 />
                             </View>
