@@ -348,13 +348,14 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     // GET LOCALSTORAGE FROM SIGNUP
     const [userNameVal, setUserNameVal] = React.useState('')
     // const [userNameVal, setUserNameVal] = React.useState([]);
-    // console.log('userNameVal', userNameVal.username + userNameVal.password);
+    // console.log('userNameVal', userNameVal.signupUsername+' '+userNameVal.signupPassword + userNameVal.password);
+    console.log("Usernamevalue=========>",userNameVal.signupUsername);
     React.useEffect(() => {
         getUserName();
     }, []);
     React.useEffect(() => {
         setLoader(true);
-        return onValue(ref(db, `/addperson_${userNameVal.username}`), querySnapShot => {
+        return onValue(ref(db, `/addperson_${userNameVal.signupUsername+' '+userNameVal.signupPassword}`), querySnapShot => {
             // return onValue(ref(db, '/addperson'), querySnapShot => {
             let data = querySnapShot.val() || {};
             let todoItems = { ...data };
@@ -380,7 +381,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     const usernameFor = 'thameem';
 
     function addNewPerson() {
-        push(ref(db, `/addperson_${userNameVal.username}`), {
+        push(ref(db, `/addperson_${userNameVal.signupUsername+' '+userNameVal.signupPassword}`), {
             // push(ref(db, '/addperson'), {
             //   addperson: value,
             //    value,
