@@ -100,6 +100,35 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         else if (fetchImage.length === 0) {
             Alert.alert('Please upload file or image')
         }
+        // FIREBASE UPDATE FOR SPECIFIC DATA
+        else if (updateData === true) {
+            setAddPerson(false);
+            setViewDetails(true);
+            update(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}/${specifId}`), {
+                // [specifId]: {
+                    'Name': name,
+                    'Room_no': selectedRoomNo,
+                    'Contact': contact,
+                    'Address': address,
+                    'Image': fetchImage,
+                    'Advanced_amount': advancedAmount,
+                    // 'date': date.getTime(), 
+                    'date': date.toUTCString(),
+                // },
+            })
+            setName('');
+            setContact('');
+            setAddress('');
+            setAdvancedAmount('');
+            setSelectedRoomNo('');
+            setFetchImage('');
+            setFocus({ style5: false })
+            setUpdateData(false);
+            setSpecificId()
+            setDate(new Date())
+            Alert.alert('Updated');
+
+        }
         else if (name && contact && selectedRoomNo && address && advancedAmount && fetchImage) {
             Alert.alert('Thank you');
             // storeUser();
@@ -410,7 +439,12 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     //   ) : (
     //     <Text>No todo item</Text>
     //   )}
-    function SingleDataHeader({ name, id }) {
+
+    // FIREBASE SPECIFIC USER DATA UPDATE
+    const [updateData, setUpdateData] = React.useState(false);
+    const [specifId, setSpecificId] = React.useState();
+    console.log('specificId', specifId);
+    function SingleDataHeader({ name, id, roomno, contact, address, image, advanceamount, date }) {
         // SINGLE DATA DELETE WITH SPECIFIC KEY 
         function singleDataDelete() {
             if (name === name) {
@@ -431,6 +465,22 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                 setAddPerson(true)
                 setViewDetails(false)
                 setAddRoom(false)
+                setName(name);
+                setContact(contact);
+                setAddress(address);
+                setAdvancedAmount(advanceamount);
+                setSelectedRoomNo(roomno);
+                setFetchImage(image);
+                // setFocus({ style5: false })
+                setUpdateData(true);
+                setSpecificId([id])
+                //I FIXED DATE
+                setDate(new Date(date))
+                // update(ref(db,`/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}/${id}`),{
+                //     [id]:{
+
+                //     },
+                // })
             }
             else {
                 Alert.alert('Not Edited')
@@ -499,7 +549,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                         // <DataTable style={styles.tableContainer} key={Object.keys(item).toString()}>
                         // {/* //VIEW EDIT DELETE */}
                         <>
-                            <SingleDataHeader name={Name} id={id} />
+                            <SingleDataHeader name={Name} id={id} roomno={Room_no} contact={Contact} address={Address} image={Image} advanceamount={Advanced_amount} date={date} />
                             <DataTable style={styles.tableContainer}>
 
                                 <DataTable.Header style={styles.tableHeader}>
@@ -619,6 +669,16 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                         setAddRoom(false)
                         setViewDetails(true)
                         setAddPerson(false)
+                        setName('');
+                        setContact('');
+                        setAddress('');
+                        setAdvancedAmount('');
+                        setSelectedRoomNo('');
+                        setFetchImage('');
+                        setFocus({ style5: false })
+                        setUpdateData(false);
+                        setSpecificId()
+                        setDate(new Date())
                     }}
                 >
                     <Text style={[styles.viewDetailsText, viewDetails && { color: 'black' }]}>{"View Details"}</Text>
