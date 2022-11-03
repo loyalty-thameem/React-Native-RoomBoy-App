@@ -133,17 +133,20 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             username: signupValue.signupUsername,
             password: signupValue.signupPassword
         })
+
     }
     // GET FIREBASE STORE...
     const [userNameData, setUserNameData] = React.useState([]);
     console.log('UserNameData first ==>', userNameData);
     React.useEffect(() => {
         // return onValue(ref(db, `username_${signupValue.username}`), querySnapShot => {
+        setLoginLoader(false);
         return onValue(ref(db, 'user'), querySnapShot => {
             let data = querySnapShot.val() || {};
             let dataItems = { ...data };
             console.log('Useeffect return dataitems ===>', dataItems);
             setUserNameData(dataItems);
+            setLoginLoader(true);
         })
     }, [])
     console.log('UserNameData second ==>', userNameData);
@@ -221,9 +224,9 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     }
     // LOGIN LOADER FOR GETTING DATA TEMPORARLY...
     const [loginLoader, setLoginLoader] = React.useState(false);
-    setTimeout(() => {
-        setLoginLoader(true);
-    }, 10000);
+    // setTimeout(() => {
+    //     setLoginLoader(true);
+    // }, 10000);
     //
     return (
         <KeyboardAvoidingView
@@ -461,8 +464,11 @@ const LoginScreen = ({ navigation: { navigate } }) => {
 
                                             setIfSignIn(true);
                                             setChecked(false);
-                                            setUsername('');
-                                            setPassword('');
+                                            // setUsername('');
+                                            // setPassword('');
+                                            setSignupUsername('');
+                                            setSignupPassword('');
+                                            setFocus({ style1: false })
                                             setFocus({ style2: false })
                                         }}>
 

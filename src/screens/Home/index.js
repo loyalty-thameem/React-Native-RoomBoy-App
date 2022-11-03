@@ -104,16 +104,16 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         else if (updateData === true) {
             setAddPerson(false);
             setViewDetails(true);
-            update(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}/${specifId}`), {
-                // [specifId]: {
-                    'Name': name,
-                    'Room_no': selectedRoomNo,
-                    'Contact': contact,
-                    'Address': address,
-                    'Image': fetchImage,
-                    'Advanced_amount': advancedAmount,
-                    // 'date': date.getTime(), 
-                    'date': date.toUTCString(),
+            update(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}/${specificId}`), {
+                // [specificId]: {
+                Name: name,
+                Room_no: selectedRoomNo,
+                Contact: contact,
+                Address: address,
+                Image: fetchImage,
+                Advanced_amount: advancedAmount,
+                // 'date': date.getTime(), 
+                Dates: date.toUTCString(),
                 // },
             })
             setName('');
@@ -127,6 +127,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             setSpecificId()
             setDate(new Date())
             Alert.alert('Updated');
+
 
         }
         else if (name && contact && selectedRoomNo && address && advancedAmount && fetchImage) {
@@ -146,6 +147,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             //Firebase
             addNewPerson();
             setDate(new Date())
+            getUserName();
         }
         else {
             Alert.alert('Invalid add person details')
@@ -154,14 +156,14 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
     // LOCALSTORAGE...
     const value = {
-        // name:name, key and value is same so used for name.
-        'Name': name,
-        'Room no': selectedRoomNo,
-        'Contact': contact,
-        'Address': address,
-        'Image': fetchImage,
-        'Advanced amount': advancedAmount,
-        'Date': date,
+        // Name:name,,,,, key and value is same so used for name.
+        Name: name,
+        Room_no: selectedRoomNo,
+        Contact: contact,
+        Address: address,
+        Image: fetchImage,
+        Advanced_amount: advancedAmount,
+        Dates: date,
     };
     // console.log("value", value);
 
@@ -234,13 +236,15 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
     //LOCALSTORAGE FOR VIEW DETAILS IN GET DATA...
     const [getData, setGetData] = React.useState([]);
-    console.log('getData', JSON.stringify(getData));
+    // console.log('getData', JSON.stringify(getData));
+    console.log('getData', getData);
     const getUser = async () => {
         try {
             const savedUser = await AsyncStorage.getItem('user');
             const currentUser = JSON.parse(savedUser);
             // console.log('CurrentUser', currentUser);
             // setGetData(currentUser);
+            // Below line for issue
             setGetData(oldArray => [...oldArray, currentUser]);
 
         } catch (error) {
@@ -379,6 +383,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     // const [userNameVal, setUserNameVal] = React.useState([]);
     // console.log('userNameVal', userNameVal.signupUsername+' '+userNameVal.signupPassword + userNameVal.password);
     console.log("Usernamevalue=========>", userNameVal.signupUsername);
+    console.log("Usernamevalue=========>", userNameVal);
     React.useEffect(() => {
         getUserName();
     }, []);
@@ -389,6 +394,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             let data = querySnapShot.val() || {};
             let todoItems = { ...data };
             console.log('Useefffect todoItems', todoItems)
+            // naming.filter(x=>x===name)&&
             setGetData(todoItems);
             setLoader(false);
         });
@@ -408,24 +414,40 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
     // const randormNumber = Math.floor(Math.random() *3);
     const usernameFor = 'thameem';
+    // LOGIN LOADER FOR GETTING DATA TEMPORARLY...
+    const [loginLoader, setLoginLoader] = React.useState(!false);
+    React.useEffect(() => {
+        // return onValue(ref(db, `username_${signupValue.username}`), querySnapShot => {
+        setLoginLoader(true);
+        return onValue(ref(db, 'user'), querySnapShot => {
+            let data = querySnapShot.val() || {};
+            let dataItems = { ...data };
+            console.log('Useeffect return dataitems ===>', dataItems);
+            // let dataItem = Object.keys(dataItems).map(key=>dataItems[key]).map(x=>x.username);
+            // alert(JSON.stringify(dataItem));
+            // setUserNameVal(dataItems);
+            setLoginLoader(false);
+        })
+    }, [])
 
     function addNewPerson() {
         push(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}`), {
             // push(ref(db, '/addperson'), {
             //   addperson: value,
             //    value,
-            'Name': name,
-            'Room_no': selectedRoomNo,
-            'Contact': contact,
-            'Address': address,
-            'Image': fetchImage,
-            'Advanced_amount': advancedAmount,
+            Name: name,
+            Room_no: selectedRoomNo,
+            Contact: contact,
+            Address: address,
+            Image: fetchImage,
+            Advanced_amount: advancedAmount,
             // 'date': date.getTime(), 
-            'date': date.toUTCString(),
+            Dates: date.toUTCString(),
         });
         // setPresentTodo('');
+
     }
-    const addPersonKey = Object.keys(getData);
+    // const addPersonKey = Object.keys(getData);
     // console.log('addPersonKey is =======>', addPersonKey);
     //
     // {todosKeys.length > 0 ? (
@@ -442,8 +464,8 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
     // FIREBASE SPECIFIC USER DATA UPDATE
     const [updateData, setUpdateData] = React.useState(false);
-    const [specifId, setSpecificId] = React.useState();
-    console.log('specificId', specifId);
+    const [specificId, setSpecificId] = React.useState();
+    console.log('specificId', specificId);
     function SingleDataHeader({ name, id, roomno, contact, address, image, advanceamount, date }) {
         // SINGLE DATA DELETE WITH SPECIFIC KEY 
         function singleDataDelete() {
@@ -486,42 +508,123 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                 Alert.alert('Not Edited')
             }
         }
+
+        const changeLayout = () => {
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+            setExpandedView(!expandedView);
+            setViewIconImage(!viewIconImage);
+            // setSpecificId(id);
+
+        }
+        // if (Platform.OS === 'android') {
+        //     UIManager.setLayoutAnimationEnabledExperimental(true);
+        //     }
+        let helloKeys = Object.keys(getData);
+        let naming = helloKeys.length > 0 ? (helloKeys.map(key => getData[key]).map(x => x.Name)) : null;
+        console.log('Naming========>', naming.filter(x => x === name))
+        let hel = naming.filter(x => x === name);
+        console.log('hel', hel);
+        console.log('helloKeys========>', helloKeys);
+        const [expandedView, setExpandedView] = React.useState(false);
+        console.log('The EXPANDED VIEW ====>', expandedView);
+        // VIEW ICON FOR HIDE OR UNHIDE
+        const [viewIconImage, setViewIconImage] = React.useState(false);
+        const viewIcon = viewIconImage ? require('../../assets/images/view_image.png') : require('../../assets/images/hide_view_image.png');
+        console.log('viewIconImage', viewIconImage);
+
         return (
-            <View style={styles.singleDataContainer}>
-                <View style={styles.singleDataTextContainer}>
-                    <Text style={styles.singleDataText}>{name.length >= 10 ? name.slice(0, 8).toUpperCase().concat('...') : name.toUpperCase()}</Text>
+            <View>
+                <View key={id} style={[styles.singleDataContainer, !viewIconImage ? { borderWidth: .4, borderColor: 'black' } : { borderWidth: .4, borderColor: '#28C76F' }]}>
+                    <View style={styles.singleDataTextContainer}>
+                        <Text style={styles.singleDataText}>{name.length >= 10 ? name.slice(0, 8).toUpperCase().concat('...') : name.toUpperCase()}</Text>
+                    </View>
+                    <View style={styles.singleDataImagesContainer}>
+                        <TouchableOpacity style={styles.viewImageContainer}
+                            //   activeOpacity={0.8} 
+                            onPress={() => {
+                                // EXPANDED VIEW
+                                if (id === id) {
+                                    changeLayout();
+                                }
+                                else {
+                                    Alert.alert('Else');
+                                }
+                            }}
+                        >
+                            {/* NEED WORK FOR CONDTIONAL IMAGE HIDE IMAGE OR UNHIDE IMAGE */}
+                            <Image
+                                source={viewIcon}
+                                style={styles.singleViewImage}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.editImageContainer}
+                            onPress={() => singleDataEditDetail()}
+                        >
+                            <Image
+                                source={require('../../assets/images/edit_image.png')}
+                                style={styles.singleEditImage}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.singleDeleteImageContainer}
+                            onPress={() => singleDataDelete()}
+                        >
+                            <Image
+                                source={require('../../assets/images/delete_image.png')}
+                                style={styles.singleDeleteImage}
+                            />
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                <View style={styles.singleDataImagesContainer}>
-                    <TouchableOpacity style={styles.viewImageContainer}
-                    // onPress={}
-                    >
-                        {/* NEED WORK FOR CONDTIONAL IMAGE HIDE IMAGE OR UNHIDE IMAGE */}
-                        <Image
-                            source={require('../../assets/images/view_image.png')}
-                            style={styles.singleViewImage}
+                {/* {
+                id === specificId && 
+            } */}
+                <DataTable style={[styles.tableContainer, { height: expandedView ? null : 0, overflow: 'hidden' }]}>
+                    <DataTable.Header style={styles.tableHeader}>
+                        <DataTable.Title style={styles.tableTitle}>{"Person"}</DataTable.Title>
+                        <DataTable.Title style={styles.tableTitle}>{'Details'}</DataTable.Title>
+                    </DataTable.Header>
+                    <DataTable.Row style={styles.tableDataCell}>
+                        <DataTable.Cell style={styles.tableCellTitle}>{'Name'}</DataTable.Cell>
+                        <DataTable.Cell style={styles.tableCellTitle}>{name}</DataTable.Cell>
+                    </DataTable.Row>
+
+                    <DataTable.Row style={styles.tableDataCell}>
+                        <DataTable.Cell style={styles.tableCellTitle}>{'Room no'}</DataTable.Cell>
+                        <DataTable.Cell style={styles.tableCellTitle}>{roomno}</DataTable.Cell>
+                    </DataTable.Row>
+                    <DataTable.Row style={styles.tableDataCell}>
+                        <DataTable.Cell style={styles.tableCellTitle}>{'Contact'}</DataTable.Cell>
+                        <DataTable.Cell style={styles.tableCellTitle}>{contact}</DataTable.Cell>
+                    </DataTable.Row>
+                    <DataTable.Row style={styles.tableDataCell}>
+                        <DataTable.Cell style={styles.tableCellTitle}>{'Address'}</DataTable.Cell>
+                        <DataTable.Cell style={styles.tableCellTitle}>{address}</DataTable.Cell>
+                    </DataTable.Row>
+                    {/* <DataTable.Row style={styles.tableDataCell}>
+                    <DataTable.Cell style={styles.tableCellTitle}>{Image}</DataTable.Cell>
+                    <DataTable.Cell style={styles.tableCellTitle}>{Image}</DataTable.Cell>
+                </DataTable.Row> */}
+                    <DataTable.Row style={styles.tableDataCell}>
+                        <DataTable.Cell style={styles.tableCellTitle}>{"Image"}</DataTable.Cell>
+                        <ImageBackground
+                            source={{ uri: image }}
+                            resizeMode="stretch"
+                            style={styles.getImage}
                         />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.editImageContainer}
-                        onPress={() => singleDataEditDetail()}
-                    >
-                        <Image
-                            source={require('../../assets/images/edit_image.png')}
-                            style={styles.singleEditImage}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.singleDeleteImageContainer}
-                        onPress={() => singleDataDelete()}
-                    >
-                        <Image
-                            source={require('../../assets/images/delete_image.png')}
-                            style={styles.singleDeleteImage}
-                        />
-                    </TouchableOpacity>
-                </View>
+                    </DataTable.Row>
+                    <DataTable.Row style={styles.tableDataCell}>
+                        <DataTable.Cell style={styles.tableCellTitle}>{'Advanced amount'}</DataTable.Cell>
+                        <DataTable.Cell style={styles.tableCellTitle}>{advanceamount}</DataTable.Cell>
+                    </DataTable.Row>
+                    <DataTable.Row style={styles.tableDataCell}>
+                        <DataTable.Cell style={styles.tableCellTitle}>{'Date'}</DataTable.Cell>
+                        <DataTable.Cell style={styles.tableCellTitle}>{new Date(date).getDate().toString() + '/' + (new Date(date).getMonth() + 1).toString() + '/' + new Date(date).getFullYear().toString()}</DataTable.Cell>
+                    </DataTable.Row>
+                </DataTable>
             </View>
         )
     }
-    const AddItems = ({ addItems: { Name, Room_no, Contact, Address, Image, Advanced_amount, date }, key, id }) => {
+    const AddItems = ({ addItems: { Name, Room_no, Contact, Address, Image, Advanced_amount, Dates }, id }) => {
         // console.log('AddItems addperson Name', Name)
         // console.log('AddItems addperson Room_no', Room_no)
         // console.log('AddItems addperson Contact', Contact)
@@ -534,11 +637,12 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         // let getDat = [];
         // const image = Image
         // getDat.push(image)
-        let hello = date;
+        let hello = Dates;
         // console.log('hello', hello);
         let dates = new Date(hello);
         // console.log('AddItems to date', dates.getDate().toString() + '/' + (dates.getMonth().toString() + 1) + '/' + dates.getFullYear().toString())
-        console.log('additems key=========>', [id]);
+        console.log('additems key [id]=========>', [id]);
+        console.log('additems key id=========>', id);
         return (
             <View>
 
@@ -549,10 +653,10 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                         // <DataTable style={styles.tableContainer} key={Object.keys(item).toString()}>
                         // {/* //VIEW EDIT DELETE */}
                         <>
-                            <SingleDataHeader name={Name} id={id} roomno={Room_no} contact={Contact} address={Address} image={Image} advanceamount={Advanced_amount} date={date} />
-                            <DataTable style={styles.tableContainer}>
+                            <SingleDataHeader name={Name} id={id} roomno={Room_no} contact={Contact} address={Address} image={Image} advanceamount={Advanced_amount} date={Dates} />
 
-                                <DataTable.Header style={styles.tableHeader}>
+                            {/* <DataTable style={[styles.tableContainer,  {height:expandedView?null:0,overflow:'hidden'}]}>
+                            <DataTable.Header style={styles.tableHeader}>
                                     <DataTable.Title style={styles.tableTitle}>{"Person"}</DataTable.Title>
                                     <DataTable.Title style={styles.tableTitle}>{'Details'}</DataTable.Title>
                                 </DataTable.Header>
@@ -571,12 +675,12 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                 <DataTable.Row style={styles.tableDataCell}>
                                     <DataTable.Cell style={styles.tableCellTitle}>{'Address'}</DataTable.Cell>
                                     <DataTable.Cell style={styles.tableCellTitle}>{Address}</DataTable.Cell>
-                                </DataTable.Row>
-                                {/* <DataTable.Row style={styles.tableDataCell}>
+                                </DataTable.Row> */}
+                            {/* <DataTable.Row style={styles.tableDataCell}>
                     <DataTable.Cell style={styles.tableCellTitle}>{Image}</DataTable.Cell>
                     <DataTable.Cell style={styles.tableCellTitle}>{Image}</DataTable.Cell>
                 </DataTable.Row> */}
-                                <DataTable.Row style={styles.tableDataCell}>
+                            {/* <DataTable.Row style={styles.tableDataCell}>
                                     <DataTable.Cell style={styles.tableCellTitle}>{"Image"}</DataTable.Cell>
                                     <ImageBackground
                                         source={{ uri: Image }}
@@ -592,14 +696,18 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                     <DataTable.Cell style={styles.tableCellTitle}>{'Date'}</DataTable.Cell>
                                     <DataTable.Cell style={styles.tableCellTitle}>{dates.getDate().toString() + '/' + (dates.getMonth() + 1).toString() + '/' + dates.getFullYear().toString()}</DataTable.Cell>
                                 </DataTable.Row>
-                            </DataTable>
+                            </DataTable> */}
                         </>
                 }
             </View>
         )
     }
-    const [expandedView, setExpandedView] = React.useState(false);
-    console.log('The EXPANDED VIEW ====>', expandedView);
+    // const [expandedView, setExpandedView] = React.useState(false);
+    // console.log('The EXPANDED VIEW ====>', expandedView);
+    //         // VIEW ICON FOR HIDE OR UNHIDE
+    //         const [viewIconImage,setViewIconImage] = React.useState(false);
+    //         const viewIcon = viewIconImage?require('../../assets/images/view_image.png'):require('../../assets/images/hide_view_image.png');
+    //        console.log('viewIconImage',viewIconImage);
     // VIEW DETAILS ALL DATA DELETE FUNCTION
     function deleteAllData() {
         remove(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}`));
@@ -625,8 +733,11 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         )
     }
     const nameLength = 'thameem ansari'
+    let addPersonKey = Object.keys(getData);
+    console.log('addPersonKey is =======>', addPersonKey);
+
     // SINGLE DATA DELETE 
-    const singleUserName = addPersonKey.length > 0 ? (addPersonKey.map(key => getData[key])) : null;
+    let singleUserName = addPersonKey.length > 0 ? (addPersonKey.map(key => getData[key])) : null;
     console.log('singleUserName ===>', singleUserName);
 
     // function singleDataDelete() {
@@ -898,10 +1009,22 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                         style={styles.addButton}
                         onPress={
                             () => {
-                                addPersonValidation()
+                                loginLoader ?
+                                    null
+                                    :
+                                    addPersonValidation()
                             }
                         }>
-                        <Text style={styles.addText}>{"Add"}</Text>
+                        {
+                            loginLoader ?
+                                <ActivityIndicator
+                                    size={"large"}
+                                    color="#00C0F0"
+                                />
+                                :
+                                <Text style={styles.addText}>{"Add"}</Text>
+
+                        }
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.addButton}
@@ -1494,8 +1617,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.8,
         shadowRadius: 2,
         elevation: 5,
-        borderWidth: .4,
-        borderColor: 'black'
+
 
     },
     singleDataTextContainer: {
@@ -1542,7 +1664,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.8,
         shadowRadius: 2,
-        elevation: 5,
+        // elevation: 5,
         borderWidth: .4,
         borderColor: 'black'
     },
@@ -1564,7 +1686,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.8,
         shadowRadius: 2,
-        elevation: 5,
+        // elevation: 5,
         borderWidth: .4,
         borderColor: 'black'
     },
@@ -1587,7 +1709,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.8,
         shadowRadius: 2,
-        elevation: 5,
+        // elevation: 5,
         borderWidth: .4,
         borderColor: 'black'
     },
