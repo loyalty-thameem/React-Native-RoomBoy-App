@@ -536,7 +536,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             <View>
                 <View key={id} style={[styles.singleDataContainer, !viewIconImage ? { borderWidth: .4, borderColor: 'black' } : { borderWidth: .4, borderColor: '#28C76F' }]}>
                     <View style={styles.singleDataTextContainer}>
-                        <Text style={styles.singleDataText}>{name.length >= 14 ? name.slice(0, 12).toUpperCase().concat('...') : name.toUpperCase()}</Text>
+                        <Text style={styles.singleDataText}>{name.length >= 12 ? name.slice(0, 10).toUpperCase().concat('...') : name.toUpperCase()}</Text>
                     </View>
                     <View style={styles.singleDataImagesContainer}>
                         <TouchableOpacity style={styles.viewImageContainer}
