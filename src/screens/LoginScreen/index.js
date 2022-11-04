@@ -95,6 +95,8 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             setRememberChecked(false);
             setUsername('');
             setPassword('');
+            setSignupUsername('')
+            setSignupPassword('')
             setFocus({ style1: false })
             setFocus({ style2: false })
             storeUser();

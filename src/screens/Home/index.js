@@ -536,7 +536,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             <View>
                 <View key={id} style={[styles.singleDataContainer, !viewIconImage ? { borderWidth: .4, borderColor: 'black' } : { borderWidth: .4, borderColor: '#28C76F' }]}>
                     <View style={styles.singleDataTextContainer}>
-                        <Text style={styles.singleDataText}>{name.length >= 10 ? name.slice(0, 8).toUpperCase().concat('...') : name.toUpperCase()}</Text>
+                        <Text style={styles.singleDataText}>{name.length >= 14 ? name.slice(0, 12).toUpperCase().concat('...') : name.toUpperCase()}</Text>
                     </View>
                     <View style={styles.singleDataImagesContainer}>
                         <TouchableOpacity style={styles.viewImageContainer}
@@ -1032,6 +1032,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                             () => {
                                 navigate('Login');
                                 getUserName();
+
                             }
                         }>
                         <Text style={styles.addText}>{"Logout"}</Text>
@@ -1604,7 +1605,7 @@ const styles = StyleSheet.create({
     singleDataContainer: {
         backgroundColor: 'lightgray',
         flexDirection: 'row',
-        width: '70%',
+        // width: '100%',
         justifyContent: 'space-around',
         alignItems: 'center',
         marginHorizontal: 10,
@@ -1626,8 +1627,8 @@ const styles = StyleSheet.create({
         flexBasis: 100,
         // width: '60%',
         justifyContent: 'center',
-        alignItems: 'center',
-        paddingLeft: 2,
+        alignItems: 'flex-start',
+        paddingLeft: 20,
     },
     singleDataText: {
         fontfamily: 'Calibri',
