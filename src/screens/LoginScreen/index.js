@@ -181,8 +181,8 @@ const LoginScreen = ({ navigation: { navigate } }) => {
         }
         // else if (dataAra.includes(username)) {
         else if (usernamedata === null) {
-            navigate('Home');
-            Alert.alert('Thank you!')
+            // navigate('Home');
+            Alert.alert('Successfully registered!')
             setChecked(false);
             setUsername('');
             setPassword('');
@@ -197,6 +197,9 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             getUserVal();
             //FIREBASE STORE...
             newUserData();
+            //LOGIN
+            navigate('Login')
+            
         }
         else if (usernamedata.includes(signupUsername)) {
             Alert.alert('Username already exists')
@@ -205,8 +208,8 @@ const LoginScreen = ({ navigation: { navigate } }) => {
         //     Alert.alert('User password already exists')
         // }
         else if (checked === false && signupUsername && signupPassword && signupConfirmPassword) {
-            navigate('Home');
-            Alert.alert('Welcome!')
+            // navigate('Home');
+            Alert.alert('Successfully registered!')
             setChecked(false);
             setUsername('');
             setPassword('');
@@ -219,6 +222,8 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             getUserVal();
             //FIREBASE STORE...
             newUserData();
+             //LOGIN
+             navigate('Login')
         }
         else {
             setIfSignIn(false);
