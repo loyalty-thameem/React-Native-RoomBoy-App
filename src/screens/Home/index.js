@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, BackHandler, Button, FlatList, Image, ImageBackground, LayoutAnimation, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, UIManager, View } from 'react-native'
+import { ActivityIndicator, Alert, BackHandler, Button, FlatList, Image, ImageBackground, LayoutAnimation, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, UIManager, View } from 'react-native'
 import React from 'react'
 import DocumentPicker, { types } from 'react-native-document-picker';
 import DatePicker from 'react-native-date-picker'
@@ -28,8 +28,9 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             const response = await DocumentPicker.pick({
                 presentationStyle: 'fullScreen',
                 // type: [types.pdf],
-                type: [DocumentPicker.types.allFiles],
-                allowMultiSelection: true,
+                type: [DocumentPicker.types.images],
+                // type: [DocumentPicker.types.allFiles],
+                // allowMultiSelection: true,
             });
             setFileResponse(response);
             setFetchImage(response[0].uri);
@@ -102,6 +103,10 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         }
         // FIREBASE UPDATE FOR SPECIFIC DATA
         else if (updateData === true) {
+            // if (selectedRoomNo === undefined || selectedRoomNo === 'Select room no') {
+            //     Alert.alert('Please select room number')
+            // please wrapping below codes here
+            // }
             setAddPerson(false);
             setViewDetails(true);
             update(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}/${specificId}`), {
@@ -467,6 +472,17 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     const [specificId, setSpecificId] = React.useState();
     console.log('specificId', specificId);
     function SingleDataHeader({ name, id, roomno, contact, address, image, advanceamount, date }) {
+        //SINGLE PHONE NUMBER SHARING FOR WHATSAPP
+        function singlePhoneNoSharingWhatsapp() {
+            // Alert.alert('Working');
+            const defaultMessage = 'Hello world';
+            let url = 'whatsapp://send?text=' + defaultMessage + '&phone=91' + contact;
+            Linking.openURL(url).then(() => {
+                console.log('Whatsapp Opened!')
+            }).catch(() => {
+                console.log('Error Whatsapp')
+            })
+        }
         // SINGLE DATA DELETE WITH SPECIFIC KEY 
         function singleDataDelete() {
             if (name === name) {
@@ -531,96 +547,118 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         const [viewIconImage, setViewIconImage] = React.useState(false);
         const viewIcon = viewIconImage ? require('../../assets/images/view_image.png') : require('../../assets/images/hide_view_image.png');
         console.log('viewIconImage', viewIconImage);
-
+        //ROOM NO SHOWING OR NOT 
+        const [roomNoShow, setRoomNoShow] = React.useState(false);
+        console.log('Room no show state', roomNoShow);
         return (
             <View>
-                <View key={id} style={[styles.singleDataContainer, !viewIconImage ? { borderWidth: .4, borderColor: 'black' } : { borderWidth: .4, borderColor: '#28C76F' }]}>
-                    <View style={styles.singleDataTextContainer}>
-                        <Text style={styles.singleDataText}>{name.length >= 12 ? name.slice(0, 10).toUpperCase().concat('...') : name.toUpperCase()}</Text>
-                    </View>
-                    <View style={styles.singleDataImagesContainer}>
-                        <TouchableOpacity style={styles.viewImageContainer}
-                            //   activeOpacity={0.8} 
-                            onPress={() => {
-                                // EXPANDED VIEW
-                                if (id === id) {
-                                    changeLayout();
-                                }
-                                else {
-                                    Alert.alert('Else');
-                                }
-                            }}
-                        >
-                            {/* NEED WORK FOR CONDTIONAL IMAGE HIDE IMAGE OR UNHIDE IMAGE */}
-                            <Image
-                                source={viewIcon}
-                                style={styles.singleViewImage}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.editImageContainer}
-                            onPress={() => singleDataEditDetail()}
-                        >
-                            <Image
-                                source={require('../../assets/images/edit_image.png')}
-                                style={styles.singleEditImage}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.singleDeleteImageContainer}
-                            onPress={() => singleDataDelete()}
-                        >
-                            <Image
-                                source={require('../../assets/images/delete_image.png')}
-                                style={styles.singleDeleteImage}
-                            />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                {/* {
+                <TouchableOpacity style={[styles.roomNoShowContainer, roomNoShow ? { borderWidth: .4, borderColor: '#28C76F' } : { borderWidth: .4, borderColor: 'black' }]}
+                    onPress={() => { setRoomNoShow(!roomNoShow) }}>
+                    <Text style={styles.roomNoShowText}>{roomno}</Text>
+                </TouchableOpacity>
+                {
+                    roomNoShow ?
+                        <>
+                            <View key={id} style={[styles.singleDataContainer, !viewIconImage ? { borderWidth: .4, borderColor: 'black' } : { borderWidth: .4, borderColor: '#28C76F' }]}>
+                                <View style={styles.singleDataTextContainer}>
+                                    <Text style={styles.singleDataText}>{name.length >= 12 ? name.slice(0, 10).toUpperCase().concat('...') : name.toUpperCase()}</Text>
+                                </View>
+                                <View style={styles.singleDataImagesContainer}>
+                                    <TouchableOpacity style={styles.viewImageContainer}
+                                        //   activeOpacity={0.8} 
+                                        onPress={() => {
+                                            // EXPANDED VIEW
+                                            if (id === id) {
+                                                changeLayout();
+                                            }
+                                            else {
+                                                Alert.alert('Else');
+                                            }
+                                        }}
+                                    >
+                                        {/* NEED WORK FOR CONDTIONAL IMAGE HIDE IMAGE OR UNHIDE IMAGE */}
+                                        <Image
+                                            source={viewIcon}
+                                            style={styles.singleViewImage}
+                                        />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.editImageContainer}
+                                        onPress={() => singleDataEditDetail()}
+                                    >
+                                        <Image
+                                            source={require('../../assets/images/edit_image.png')}
+                                            style={styles.singleEditImage}
+                                        />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.singleDeleteImageContainer}
+                                        onPress={() => singleDataDelete()}
+                                    >
+                                        <Image
+                                            source={require('../../assets/images/delete_image.png')}
+                                            style={styles.singleDeleteImage}
+                                        />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.singleWhatsappImageContainer}
+                                        onPress={() => singlePhoneNoSharingWhatsapp()}
+                                    >
+                                        <Image
+                                            source={require('../../assets/images/whatsapp_image1.png')}
+                                            style={styles.singleWhatsappImage}
+                                        />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                            {/* {
                 id === specificId && 
             } */}
-                <DataTable style={[styles.tableContainer, { height: expandedView ? null : 0, overflow: 'hidden' }]}>
-                    <DataTable.Header style={styles.tableHeader}>
-                        <DataTable.Title style={styles.tableTitle}>{"Person"}</DataTable.Title>
-                        <DataTable.Title style={styles.tableTitle}>{'Details'}</DataTable.Title>
-                    </DataTable.Header>
-                    <DataTable.Row style={styles.tableDataCell}>
-                        <DataTable.Cell style={styles.tableCellTitle}>{'Name'}</DataTable.Cell>
-                        <DataTable.Cell style={styles.tableCellTitle}>{name}</DataTable.Cell>
-                    </DataTable.Row>
+                            <DataTable style={[styles.tableContainer, { height: expandedView ? null : 0, overflow: 'hidden' }]}>
+                                <DataTable.Header style={styles.tableHeader}>
+                                    <DataTable.Title style={styles.tableTitle}>{"Person"}</DataTable.Title>
+                                    <DataTable.Title style={styles.tableTitle}>{'Details'}</DataTable.Title>
+                                </DataTable.Header>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Name'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{name}</DataTable.Cell>
+                                </DataTable.Row>
 
-                    <DataTable.Row style={styles.tableDataCell}>
-                        <DataTable.Cell style={styles.tableCellTitle}>{'Room no'}</DataTable.Cell>
-                        <DataTable.Cell style={styles.tableCellTitle}>{roomno}</DataTable.Cell>
-                    </DataTable.Row>
-                    <DataTable.Row style={styles.tableDataCell}>
-                        <DataTable.Cell style={styles.tableCellTitle}>{'Contact'}</DataTable.Cell>
-                        <DataTable.Cell style={styles.tableCellTitle}>{contact}</DataTable.Cell>
-                    </DataTable.Row>
-                    <DataTable.Row style={styles.tableDataCell}>
-                        <DataTable.Cell style={styles.tableCellTitle}>{'Address'}</DataTable.Cell>
-                        <DataTable.Cell style={styles.tableCellTitle}>{address}</DataTable.Cell>
-                    </DataTable.Row>
-                    {/* <DataTable.Row style={styles.tableDataCell}>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Room no'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{roomno}</DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Contact'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{contact}</DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Address'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{address}</DataTable.Cell>
+                                </DataTable.Row>
+                                {/* <DataTable.Row style={styles.tableDataCell}>
                     <DataTable.Cell style={styles.tableCellTitle}>{Image}</DataTable.Cell>
                     <DataTable.Cell style={styles.tableCellTitle}>{Image}</DataTable.Cell>
                 </DataTable.Row> */}
-                    <DataTable.Row style={styles.tableDataCell}>
-                        <DataTable.Cell style={styles.tableCellTitle}>{"Image"}</DataTable.Cell>
-                        <ImageBackground
-                            source={{ uri: image }}
-                            resizeMode="stretch"
-                            style={styles.getImage}
-                        />
-                    </DataTable.Row>
-                    <DataTable.Row style={styles.tableDataCell}>
-                        <DataTable.Cell style={styles.tableCellTitle}>{'Advanced amount'}</DataTable.Cell>
-                        <DataTable.Cell style={styles.tableCellTitle}>{advanceamount}</DataTable.Cell>
-                    </DataTable.Row>
-                    <DataTable.Row style={styles.tableDataCell}>
-                        <DataTable.Cell style={styles.tableCellTitle}>{'Date'}</DataTable.Cell>
-                        <DataTable.Cell style={styles.tableCellTitle}>{new Date(date).getDate().toString() + '/' + (new Date(date).getMonth() + 1).toString() + '/' + new Date(date).getFullYear().toString()}</DataTable.Cell>
-                    </DataTable.Row>
-                </DataTable>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{"Image"}</DataTable.Cell>
+                                    <ImageBackground
+                                        source={{ uri: image }}
+                                        resizeMode="stretch"
+                                        style={styles.getImage}
+                                    />
+                                </DataTable.Row>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Advanced amount'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{advanceamount}</DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Date'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{new Date(date).getDate().toString() + '/' + (new Date(date).getMonth() + 1).toString() + '/' + new Date(date).getFullYear().toString()}</DataTable.Cell>
+                                </DataTable.Row>
+                            </DataTable>
+                        </>
+                        :
+                        null
+                }
+
             </View>
         )
     }
@@ -1612,7 +1650,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         // flexShrink:1,
         borderRadius: 5,
-        borderRadius: 8,
+        // borderRadius: 8,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.8,
@@ -1660,7 +1698,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin: 3,
         borderRadius: 40,
-        borderRadius: 8,
+        // borderRadius: 8,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.8,
@@ -1682,7 +1720,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin: 3,
         borderRadius: 40,
-        borderRadius: 8,
+        // borderRadius: 8,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.8,
@@ -1703,9 +1741,9 @@ const styles = StyleSheet.create({
         height: 25,
         justifyContent: 'center',
         alignItems: 'center',
-        // margin:3,
+        margin: 3,
         borderRadius: 40,
-        borderRadius: 8,
+        // borderRadius: 8,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.8,
@@ -1720,4 +1758,48 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
 
     },
+    singleWhatsappImageContainer: {
+        backgroundColor: '#a8b6ee',
+        width: 25,
+        height: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 3,
+        borderRadius: 40,
+        // borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        // elevation: 5,
+        borderWidth: .4,
+        borderColor: 'black'
+    },
+    singleWhatsappImage: {
+        width: 15,
+        height: 15,
+        resizeMode: 'contain',
+        tintColor: 'black'
+    },
+    roomNoShowContainer: {
+        backgroundColor: '#a8b6ee',
+        // width: 30,
+        // height: 30,
+        margin: 3,
+        borderRadius: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        // elevation: 5,
+        justifyContent: 'center',
+        alignItems: "center",
+    },
+    roomNoShowText: {
+        fontfamily: 'Calibri',
+        fontStyle: 'normal',
+        fontWeight: '500',
+        fontSize: 17,
+        color: '#121212',
+    }
 })
