@@ -475,7 +475,9 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         //SINGLE PHONE NUMBER SHARING FOR WHATSAPP
         function singlePhoneNoSharingWhatsapp() {
             // Alert.alert('Working');
-            const defaultMessage = 'Hello world';
+            const month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+            const defaultMessage = `You have not paid the fee for the month of *${month[new Date(date).getMonth()]}* and *${month[new Date().getMonth()]}*.`;
+            // Alert.alert( `You have not paid the month of ${month[new Date(date).getMonth()]} and ${month[new Date().getMonth()]}.`)
             let url = 'whatsapp://send?text=' + defaultMessage + '&phone=91' + contact;
             Linking.openURL(url).then(() => {
                 console.log('Whatsapp Opened!')
@@ -552,7 +554,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         console.log('Room no show state', roomNoShow);
         return (
             <View>
-                <TouchableOpacity style={[styles.roomNoShowContainer, roomNoShow ? { borderWidth: .4, borderColor: '#28C76F' } : { borderWidth: .4, borderColor: 'black' }]}
+                <TouchableOpacity style={[styles.roomNoShowContainer, roomNoShow ? { borderWidth: .7, borderColor: '#28C76F' } : { borderWidth: .4, borderColor: 'black' }]}
                     onPress={() => { setRoomNoShow(!roomNoShow) }}>
                     <Text style={styles.roomNoShowText}>{roomno}</Text>
                 </TouchableOpacity>
