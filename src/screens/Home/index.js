@@ -75,8 +75,57 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     const [advancedAmount, setAdvancedAmount] = React.useState('');
     //ADD ROOM STATE
     const [roomNo1, setRoomNo1] = React.useState('');
-    // console.log('ADD ROOM STATE OF ROOMNO1', roomNo1);
+    console.log('ADD ROOM STATE OF ROOMNO1', roomNo1);
     const [noOfPerson, setNoOfPerson] = React.useState('');
+    console.log('No of person =====>', noOfPerson);
+    // ADD ROOM DATA STORED TO FIREBASE REALTIME DATABASE
+    const addRoomNoWithPersonData = {
+        roomNo: roomNo1,
+        roomPerson: noOfPerson
+    }
+    // GET
+    const [storedRoomNo, setStoredRoomNo] = React.useState([])
+    // console.log('storeRoomNo====>', storedRoomNo);
+    // GET ROOM NUMBER ONLY FOR VALIDATE PURPOSE
+    // setTimeout(() => {
+    //     console.log('storedRoomNoKeyGet', storedRoomNoKeyGet);
+    //     // console.log('checkRoomByAddRoom checkRoomByAddRoom.includes(1)', storedRoomNoKeyGet.includes("1"));
+    // }, 3000);
+
+    let storedRoomNoKey = Object.keys(storedRoomNo);
+    // const dummyRoomNo = [101];
+    let storedRoomNoKeyGet = storedRoomNoKey.length > 0 ? (storedRoomNoKey.map(key => storedRoomNo[key]).map(x => x.roomNo)) : null;
+
+
+    // console.log('storedRoomNoKey ', storedRoomNoKeyGet)
+    // setTimeout(() => {
+    //     console.log('storeRoomNo setTimeout ====>', storedRoomNo);
+    //     console.log('storedRoomNoKey ====>', storedRoomNoKey)
+    //     console.log('storedRoomNoKeyGet setTimeout', storedRoomNoKeyGet)
+
+
+    // }, 2000);
+    React.useEffect(() => {
+        // return onValue(ref(db, `/addRoomNoWithPerson_${addRoom.roomNo + "_" + addRoom.roomPerson}`), querySnapShot => {
+        return onValue(ref(db, `/addRoomNoWithPerson`), querySnapShot => {
+            let data = querySnapShot.val() || {};
+            // console.log('DATA USEEFFECT ====>', data);
+            let dataItems = { ...data };
+            // console.log('DATA DATAITEMS USEEFFECT =====>', dataItems);
+            setStoredRoomNo(dataItems);
+        })
+    }, [])
+    //STORE
+    function addRoomNoWithPerson() {
+        // NOT GOOD
+        // push(ref(db,`/addRoomNoWithPerson_${addRoom.roomNo +"_"+addRoom.roomPerson}`),{
+        //     roomNo:roomNo1,
+        //     roomPerson:noOfPerson
+        // });
+        // GOOD
+        // push(ref(db, `/addRoomNoWithPerson_${addRoom.roomNo + "_" + addRoom.roomPerson}`), addRoomNoWithPersonData);
+        push(ref(db, `/addRoomNoWithPerson`), addRoomNoWithPersonData);
+    }
     //DROPDOWN SELECT PICKER...
     const [selectedRoomNo, setSelectedRoomNo] = React.useState();
     // console.log('selectedRoomNo', selectedRoomNo)
@@ -85,6 +134,13 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     const addPersonValidation = () => {
         if (name.length === 0) {
             Alert.alert('Please enter name')
+        }
+        else if (storedRoomNoKeyGet === null) {
+            Alert.alert('Please add room number');
+            setAddPerson(false);
+            setViewDetails(false)
+            setAddRoom(true)
+
         }
         else if (selectedRoomNo === undefined || selectedRoomNo === 'Select room no') {
             Alert.alert('Please select room number')
@@ -95,12 +151,13 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         else if (address.length === 0) {
             Alert.alert('Please enter address')
         }
-        else if (advancedAmount.length === 0) {
-            Alert.alert('Please enter advanced amount')
-        }
         else if (fetchImage.length === 0) {
             Alert.alert('Please upload file or image')
         }
+        else if (advancedAmount.length === 0) {
+            Alert.alert('Please enter advanced amount')
+        }
+
         // FIREBASE UPDATE FOR SPECIFIC DATA
         else if (updateData === true) {
             // if (selectedRoomNo === undefined || selectedRoomNo === 'Select room no') {
@@ -155,7 +212,8 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             getUserName();
         }
         else {
-            Alert.alert('Invalid add person details')
+            // Alert.alert('Invalid add person details')
+            Alert.alert('Please select room number')
         }
     }
 
@@ -187,11 +245,26 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
     //ROOM VALIDATION...
     const addRoomValidation = () => {
+        const d = JSON.parse(roomNo1);
         if (roomNo1.length === 0) {
-            Alert.alert('Please enter room no')
+            Alert.alert('Please enter room number')
         }
         else if (noOfPerson.length === 0) {
             Alert.alert('Please enter no of person')
+        }
+        else if (storedRoomNoKeyGet === null) {
+            Alert.alert("Added room no");
+            storeRoomUser();
+            getRoom();
+            setNoOfPerson('');
+            setRoomNo1('');
+            setAddPerson(true);
+            setAddRoom(false);
+            setFocus({ style7: false })
+            addRoomNoWithPerson();
+        }
+        else if (storedRoomNoKeyGet.includes(roomNo1)) {
+            Alert.alert('This room number is already used by you')
         }
         else if (roomNo1 && noOfPerson) {
             // Alert.alert("Hi, Sorry. It's development progress...");
@@ -203,6 +276,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             setAddPerson(true);
             setAddRoom(false);
             setFocus({ style7: false })
+            addRoomNoWithPerson();
         }
         else {
             Alert.alert('Invalid Details')
@@ -210,15 +284,16 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     }
 
     //LOCALSTORAGE FOR ROOM
-    const valueRoom = {
-        'Room_no': roomNo1,
-        // noOfPerson
-    }
+    // TEMPORARIRLY HIDE BELOW OBJECT AND addRoomNoWithPersonData INSTEADOF valueRoom
+    // const valueRoom = {
+    //     'Room_no': roomNo1,
+    //     // noOfPerson
+    // }
     // console.log('ValueRoom', valueRoom);
 
     const storeRoomUser = async () => {
         try {
-            await AsyncStorage.setItem('valueRoom', JSON.stringify(valueRoom));
+            await AsyncStorage.setItem('addRoomNoWithPersonData', JSON.stringify(addRoomNoWithPersonData));
 
         } catch (error) {
             console.log("Error", error);
@@ -230,7 +305,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     // console.log('getData1', getData1);
     const getRoom = async () => {
         try {
-            const savedRoomNo = await AsyncStorage.getItem('valueRoom');
+            const savedRoomNo = await AsyncStorage.getItem('addRoomNoWithPersonData');
             const currentRoomNo = JSON.parse(savedRoomNo);
             // console.log('CurrentRoomNo', currentRoomNo);
             setGetData1(oldArray => [...oldArray, currentRoomNo]);
@@ -270,9 +345,11 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
     //ROOM
     const [roomNoData, setRoomNoData] = React.useState([]);
-    // console.log('ROOM NO DATA SINGLE TIME RENDER', roomNoData);
-    const roomDataRetrieve = [];
-    roomDataRetrieve.push(roomNoData);
+    // setTimeout(() => {
+    //     console.log('ROOM NO DATA SINGLE TIME RENDER', roomNoData);
+    // }, 2000);
+    // const roomDataRetrieve = [];
+    // roomDataRetrieve.push(roomNoData);
     // console.log('roomDataRetrieve', roomDataRetrieve);
     // console.log('roomDataRetrieve Object.values', Object.values(roomDataRetrieve));
 
@@ -288,9 +365,14 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     React.useEffect(() => {
         //ROOM NO  
         const roomNo = getData1.map((item, index) => {
+            setTimeout(() => {
+                console.log("item========>", item);
+            }, 3000);
             // console.log('useEffect roomNo item Object.values', item);
-            let dataPass = item === null ? 101 : JSON.parse(item.Room_no);
-            setRoomNoData(dataPass);
+            // let dataPass = item === null ? 101 : JSON.parse(item.Room_no);
+            // console.log("dataPass", dataPass)
+            // setRoomNoData(dataPass);
+            setRoomNoData(item);
         });
         console.log('Room No', roomNo);
         // return;
@@ -475,7 +557,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         //SINGLE PHONE NUMBER SHARING FOR WHATSAPP
         function singlePhoneNoSharingWhatsapp() {
             // Alert.alert('Working');
-            const month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+            const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             const defaultMessage = `You have not paid the fee for the month of *${month[new Date(date).getMonth()]}* and *${month[new Date().getMonth()]}*.`;
             // Alert.alert( `You have not paid the month of ${month[new Date(date).getMonth()]} and ${month[new Date().getMonth()]}.`)
             let url = 'whatsapp://send?text=' + defaultMessage + '&phone=91' + contact;
@@ -570,12 +652,12 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                         //   activeOpacity={0.8} 
                                         onPress={() => {
                                             // EXPANDED VIEW
-                                            if (id === id) {
-                                                changeLayout();
-                                            }
-                                            else {
-                                                Alert.alert('Else');
-                                            }
+                                            // if (id === id) {
+                                            changeLayout();
+                                            // }
+                                            // else {
+                                            //     Alert.alert('Else');
+                                            // }
                                         }}
                                     >
                                         {/* NEED WORK FOR CONDTIONAL IMAGE HIDE IMAGE OR UNHIDE IMAGE */}
@@ -789,6 +871,11 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     //     }
     //     // remove (ref(db,`/addperson_${userNameVal.signupUsername+' '+userNameVal.signupPassword}`))
     // }
+
+    // ASCENDING ORDER FUNCTION CALL
+    function ascendingOrder() {
+        Alert.alert('ascendingOrder');
+    }
     return (
         <View style={styles.container}>
             {/* <View style={[styles.headerContainer, viewDetails && { marginVertical: 35 }]}> */}
@@ -835,6 +922,27 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                     <Text style={[styles.viewDetailsText, viewDetails && { color: 'black' }]}>{"View Details"}</Text>
                 </TouchableOpacity>
             </View>
+            {/* ASCENDING ORDER FOR ALL DATA */}
+            {
+                viewDetails && addPersonKey.length > 0 ?
+
+                    <View style={styles.allDeleteImageContainer}>
+                        {/* <TouchableOpacity 
+                        // style={styles.allDeleteImage}
+                            // onPress={() => ascendingOrder()}
+                            > */}
+                        <Button title="Ascending Order"
+                            onPress={() => ascendingOrder()}
+                        />
+                        {/* <Image
+                                source={require('../../assets/images/all_delete_image.png')}
+                                style={styles.allDeleteItems}
+                            /> */}
+                        {/* </TouchableOpacity> */}
+                    </View>
+                    :
+                    null
+            }
             {/* DELETE ALL DATA FROM FIREBASE */}
             {
                 viewDetails && addPersonKey.length > 0 ?
@@ -892,7 +1000,16 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                             >
                                 <Picker.Item style={{ color: '#A9A9A9', fontSize: 15 }} label="Select room no" value="Select room no" />
                                 {/* <Picker.Item style={{ color: 'black' }} label="101" value="101" /> */}
-                                <Picker.Item style={{ color: 'black' }} label={JSON.stringify(roomNoData)} value={JSON.stringify(roomNoData)} />
+                                {/* FINALLY I GOT THE RESULT */}
+                                {
+                                    storedRoomNoKeyGet?.map((val, key) => {
+                                        console.log('Map=>', val);
+
+                                        return (
+                                            <Picker.Item key={key} style={{ color: 'black' }} label={val} value={val} />
+                                        )
+                                    })
+                                }
                                 {/* <Picker.Item label="102" value="102" />
                                 <Picker.Item label="103" value="103" />
                                 <Picker.Item label="104" value="104" />
@@ -1095,7 +1212,9 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                 value={roomNo1}
                                 onChangeText={(text) => {
                                     // console.log(text);
+                                    // setRoomNo1(text);
                                     setRoomNo1(text);
+                                   
                                 }}
                                 onFocus={() => setFocus({ style6: !false })}
                                 style={styles.nameTextInput}
