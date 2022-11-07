@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, BackHandler, Button, FlatList, Image, ImageBackground, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Alert, BackHandler, Button, FlatList, Image, ImageBackground, LayoutAnimation, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, UIManager, View } from 'react-native'
 import React from 'react'
 import DocumentPicker, { types } from 'react-native-document-picker';
 import DatePicker from 'react-native-date-picker'
@@ -28,8 +28,9 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             const response = await DocumentPicker.pick({
                 presentationStyle: 'fullScreen',
                 // type: [types.pdf],
-                type: [DocumentPicker.types.allFiles],
-                allowMultiSelection: true,
+                type: [DocumentPicker.types.images],
+                // type: [DocumentPicker.types.allFiles],
+                // allowMultiSelection: true,
             });
             setFileResponse(response);
             setFetchImage(response[0].uri);
@@ -64,9 +65,9 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
     //File upload image
     const [fetchImage, setFetchImage] = React.useState('')
-    console.log('fetchImage', fetchImage)
+    // console.log('fetchImage', fetchImage)
     const icon = fetchImage === '' ? require('../../assets/images/no_image.png') : { uri: fetchImage }
-    console.log('fetchImage Icon ', icon)
+    // console.log('fetchImage Icon ', icon)
     //ADD PERSON STATE
     const [name, setName] = React.useState('');
     const [roomNo, setRoomNo] = React.useState('');
@@ -75,11 +76,11 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     const [advancedAmount, setAdvancedAmount] = React.useState('');
     //ADD ROOM STATE
     const [roomNo1, setRoomNo1] = React.useState('');
-    console.log('ADD ROOM STATE OF ROOMNO1', roomNo1);
+    // console.log('ADD ROOM STATE OF ROOMNO1', roomNo1);
     const [noOfPerson, setNoOfPerson] = React.useState('');
     //DROPDOWN SELECT PICKER...
     const [selectedRoomNo, setSelectedRoomNo] = React.useState();
-    console.log('selectedRoomNo', selectedRoomNo)
+    // console.log('selectedRoomNo', selectedRoomNo)
 
     //ADD PERSON VALIDATION
     const addPersonValidation = () => {
@@ -101,6 +102,40 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         else if (fetchImage.length === 0) {
             Alert.alert('Please upload file or image')
         }
+        // FIREBASE UPDATE FOR SPECIFIC DATA
+        else if (updateData === true) {
+            // if (selectedRoomNo === undefined || selectedRoomNo === 'Select room no') {
+            //     Alert.alert('Please select room number')
+            // please wrapping below codes here
+            // }
+            setAddPerson(false);
+            setViewDetails(true);
+            update(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}/${specificId}`), {
+                // [specificId]: {
+                Name: name,
+                Room_no: selectedRoomNo,
+                Contact: contact,
+                Address: address,
+                Image: fetchImage,
+                Advanced_amount: advancedAmount,
+                // 'date': date.getTime(), 
+                Dates: date.toUTCString(),
+                // },
+            })
+            setName('');
+            setContact('');
+            setAddress('');
+            setAdvancedAmount('');
+            setSelectedRoomNo('');
+            setFetchImage('');
+            setFocus({ style5: false })
+            setUpdateData(false);
+            setSpecificId()
+            setDate(new Date())
+            Alert.alert('Updated');
+
+
+        }
         else if (name && contact && selectedRoomNo && address && advancedAmount && fetchImage) {
             Alert.alert('Thank you');
             // storeUser();
@@ -118,6 +153,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             //Firebase
             addNewPerson();
             setDate(new Date())
+            getUserName();
         }
         else {
             Alert.alert('Invalid add person details')
@@ -126,16 +162,16 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
     // LOCALSTORAGE...
     const value = {
-        // name:name, key and value is same so used for name.
-        'Name': name,
-        'Room no': selectedRoomNo,
-        'Contact': contact,
-        'Address': address,
-        'Image': fetchImage,
-        'Advanced amount': advancedAmount,
-        'Date': date,
+        // Name:name,,,,, key and value is same so used for name.
+        Name: name,
+        Room_no: selectedRoomNo,
+        Contact: contact,
+        Address: address,
+        Image: fetchImage,
+        Advanced_amount: advancedAmount,
+        Dates: date,
     };
-    console.log("value", value);
+    // console.log("value", value);
 
     const storeUser = async () => {
         try {
@@ -179,7 +215,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         'Room_no': roomNo1,
         // noOfPerson
     }
-    console.log('ValueRoom', valueRoom);
+    // console.log('ValueRoom', valueRoom);
 
     const storeRoomUser = async () => {
         try {
@@ -192,12 +228,12 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
     //LOCALSTORAGE FOR ADD ROOM TO ADD PERSON DETAILS IN GET DATA...
     const [getData1, setGetData1] = React.useState([]);
-    console.log('getData1', getData1);
+    // console.log('getData1', getData1);
     const getRoom = async () => {
         try {
             const savedRoomNo = await AsyncStorage.getItem('valueRoom');
             const currentRoomNo = JSON.parse(savedRoomNo);
-            console.log('CurrentRoomNo', currentRoomNo);
+            // console.log('CurrentRoomNo', currentRoomNo);
             setGetData1(oldArray => [...oldArray, currentRoomNo]);
         } catch (error) {
             console.log('Error', error)
@@ -206,13 +242,15 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
     //LOCALSTORAGE FOR VIEW DETAILS IN GET DATA...
     const [getData, setGetData] = React.useState([]);
-    console.log('getData', JSON.stringify(getData));
+    // console.log('getData', JSON.stringify(getData));
+    console.log('getData', getData);
     const getUser = async () => {
         try {
             const savedUser = await AsyncStorage.getItem('user');
             const currentUser = JSON.parse(savedUser);
-            console.log('CurrentUser', currentUser);
+            // console.log('CurrentUser', currentUser);
             // setGetData(currentUser);
+            // Below line for issue
             setGetData(oldArray => [...oldArray, currentUser]);
 
         } catch (error) {
@@ -228,16 +266,16 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     const [userData, setUserData] = React.useState([]);
     const dataRetrieve = [];
     dataRetrieve.push(userData);
-    console.log("userData", userData);
-    console.log("dataRetrieve", dataRetrieve);
+    // console.log("userData", userData);
+    // console.log("dataRetrieve", dataRetrieve);
 
     //ROOM
     const [roomNoData, setRoomNoData] = React.useState([]);
-    console.log('ROOM NO DATA SINGLE TIME RENDER', roomNoData);
+    // console.log('ROOM NO DATA SINGLE TIME RENDER', roomNoData);
     const roomDataRetrieve = [];
     roomDataRetrieve.push(roomNoData);
-    console.log('roomDataRetrieve', roomDataRetrieve);
-    console.log('roomDataRetrieve Object.values', Object.values(roomDataRetrieve));
+    // console.log('roomDataRetrieve', roomDataRetrieve);
+    // console.log('roomDataRetrieve Object.values', Object.values(roomDataRetrieve));
 
     // let element = '';
     // // for (let index = 0; index < roomDataRetrieve.length; index++) {
@@ -251,7 +289,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     React.useEffect(() => {
         //ROOM NO  
         const roomNo = getData1.map((item, index) => {
-            console.log('useEffect roomNo item Object.values', item);
+            // console.log('useEffect roomNo item Object.values', item);
             let dataPass = item === null ? 101 : JSON.parse(item.Room_no);
             setRoomNoData(dataPass);
         });
@@ -287,7 +325,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     }, []);
     //FLATLIST DATE
     const renderItem = ({ item }) => {
-        console.log('item flatlist', item)
+        // console.log('item flatlist', item)
         // console.log('item Object.keys(item)[0] flatlist', Object.values(item)[0]);
         //    let datalist = [];
         //    datalist.push(Object.values(item)[6]);
@@ -349,17 +387,20 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     // GET LOCALSTORAGE FROM SIGNUP
     const [userNameVal, setUserNameVal] = React.useState('')
     // const [userNameVal, setUserNameVal] = React.useState([]);
-    console.log('userNameVal', userNameVal.username + userNameVal.password);
+    // console.log('userNameVal', userNameVal.signupUsername+' '+userNameVal.signupPassword + userNameVal.password);
+    console.log("Usernamevalue=========>", userNameVal.signupUsername);
+    console.log("Usernamevalue=========>", userNameVal);
     React.useEffect(() => {
         getUserName();
     }, []);
     React.useEffect(() => {
         setLoader(true);
-        return onValue(ref(db, `/addperson${userNameVal.username}`), querySnapShot => {
+        return onValue(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}`), querySnapShot => {
             // return onValue(ref(db, '/addperson'), querySnapShot => {
             let data = querySnapShot.val() || {};
             let todoItems = { ...data };
             console.log('Useefffect todoItems', todoItems)
+            // naming.filter(x=>x===name)&&
             setGetData(todoItems);
             setLoader(false);
         });
@@ -369,7 +410,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         try {
             const data = await AsyncStorage.getItem('signUser');
             const dataItem = JSON.parse(data);
-            console.log('localstorage get items', dataItem);
+            // console.log('localstorage get items', dataItem);
             setUserNameVal(dataItem)
 
         } catch (error) {
@@ -378,26 +419,42 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     }
 
     // const randormNumber = Math.floor(Math.random() *3);
-    // const usernameFor = 'thameem';
+    const usernameFor = 'thameem';
+    // LOGIN LOADER FOR GETTING DATA TEMPORARLY...
+    const [loginLoader, setLoginLoader] = React.useState(!false);
+    React.useEffect(() => {
+        // return onValue(ref(db, `username_${signupValue.username}`), querySnapShot => {
+        setLoginLoader(true);
+        return onValue(ref(db, 'user'), querySnapShot => {
+            let data = querySnapShot.val() || {};
+            let dataItems = { ...data };
+            console.log('Useeffect return dataitems ===>', dataItems);
+            // let dataItem = Object.keys(dataItems).map(key=>dataItems[key]).map(x=>x.username);
+            // alert(JSON.stringify(dataItem));
+            // setUserNameVal(dataItems);
+            setLoginLoader(false);
+        })
+    }, [])
 
     function addNewPerson() {
-        push(ref(db, `/addperson${userNameVal.username}`), {
+        push(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}`), {
             // push(ref(db, '/addperson'), {
             //   addperson: value,
             //    value,
-            'Name': name,
-            'Room_no': selectedRoomNo,
-            'Contact': contact,
-            'Address': address,
-            'Image': fetchImage,
-            'Advanced_amount': advancedAmount,
+            Name: name,
+            Room_no: selectedRoomNo,
+            Contact: contact,
+            Address: address,
+            Image: fetchImage,
+            Advanced_amount: advancedAmount,
             // 'date': date.getTime(), 
-            'date': date.toUTCString(),
+            Dates: date.toUTCString(),
         });
         // setPresentTodo('');
+
     }
-    const addPersonKey = Object.keys(getData);
-    console.log('addPersonKey is =======>', addPersonKey);
+    // const addPersonKey = Object.keys(getData);
+    // console.log('addPersonKey is =======>', addPersonKey);
     //
     // {todosKeys.length > 0 ? (
     //     todosKeys.map(key => (
@@ -411,7 +468,204 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     //     <Text>No todo item</Text>
     //   )}
 
-    const AddItems = ({ addItems: { Name, Room_no, Contact, Address, Image, Advanced_amount, date } }) => {
+    // FIREBASE SPECIFIC USER DATA UPDATE
+    const [updateData, setUpdateData] = React.useState(false);
+    const [specificId, setSpecificId] = React.useState();
+    console.log('specificId', specificId);
+    function SingleDataHeader({ name, id, roomno, contact, address, image, advanceamount, date }) {
+        //SINGLE PHONE NUMBER SHARING FOR WHATSAPP
+        function singlePhoneNoSharingWhatsapp() {
+            // Alert.alert('Working');
+            const month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+            const defaultMessage = `You have not paid the fee for the month of *${month[new Date(date).getMonth()]}* and *${month[new Date().getMonth()]}*.`;
+            // Alert.alert( `You have not paid the month of ${month[new Date(date).getMonth()]} and ${month[new Date().getMonth()]}.`)
+            let url = 'whatsapp://send?text=' + defaultMessage + '&phone=91' + contact;
+            Linking.openURL(url).then(() => {
+                console.log('Whatsapp Opened!')
+            }).catch(() => {
+                console.log('Error Whatsapp')
+            })
+        }
+        // SINGLE DATA DELETE WITH SPECIFIC KEY 
+        function singleDataDelete() {
+            if (name === name) {
+                // Alert.alert('same')
+                // const id = id ==== id ? id: null;
+                // const specifiUserKey = 
+                remove(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}/${id}`))
+                // console.log("singleDataDelete ID",id)
+            }
+            else {
+                Alert.alert('Not deleted')
+            }
+        }
+        // SINGLE DATA EDIT WITH SPECIFIC KEY 
+        function singleDataEditDetail() {
+            if (name === name) {
+                Alert.alert('Edit data');
+                setAddPerson(true)
+                setViewDetails(false)
+                setAddRoom(false)
+                setName(name);
+                setContact(contact);
+                setAddress(address);
+                setAdvancedAmount(advanceamount);
+                setSelectedRoomNo(roomno);
+                setFetchImage(image);
+                // setFocus({ style5: false })
+                setUpdateData(true);
+                setSpecificId([id])
+                //I FIXED DATE
+                setDate(new Date(date))
+                // update(ref(db,`/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}/${id}`),{
+                //     [id]:{
+
+                //     },
+                // })
+            }
+            else {
+                Alert.alert('Not Edited')
+            }
+        }
+
+        const changeLayout = () => {
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+            setExpandedView(!expandedView);
+            setViewIconImage(!viewIconImage);
+            // setSpecificId(id);
+
+        }
+        // if (Platform.OS === 'android') {
+        //     UIManager.setLayoutAnimationEnabledExperimental(true);
+        //     }
+        let helloKeys = Object.keys(getData);
+        let naming = helloKeys.length > 0 ? (helloKeys.map(key => getData[key]).map(x => x.Name)) : null;
+        console.log('Naming========>', naming.filter(x => x === name))
+        let hel = naming.filter(x => x === name);
+        console.log('hel', hel);
+        console.log('helloKeys========>', helloKeys);
+        const [expandedView, setExpandedView] = React.useState(false);
+        console.log('The EXPANDED VIEW ====>', expandedView);
+        // VIEW ICON FOR HIDE OR UNHIDE
+        const [viewIconImage, setViewIconImage] = React.useState(false);
+        const viewIcon = viewIconImage ? require('../../assets/images/view_image.png') : require('../../assets/images/hide_view_image.png');
+        console.log('viewIconImage', viewIconImage);
+        //ROOM NO SHOWING OR NOT 
+        const [roomNoShow, setRoomNoShow] = React.useState(false);
+        console.log('Room no show state', roomNoShow);
+        return (
+            <View>
+                <TouchableOpacity style={[styles.roomNoShowContainer, roomNoShow ? { borderWidth: .7, borderColor: '#28C76F' } : { borderWidth: .4, borderColor: 'black' }]}
+                    onPress={() => { setRoomNoShow(!roomNoShow) }}>
+                    <Text style={styles.roomNoShowText}>{roomno}</Text>
+                </TouchableOpacity>
+                {
+                    roomNoShow ?
+                        <>
+                            <View key={id} style={[styles.singleDataContainer, !viewIconImage ? { borderWidth: .4, borderColor: 'black' } : { borderWidth: .4, borderColor: '#28C76F' }]}>
+                                <View style={styles.singleDataTextContainer}>
+                                    <Text style={styles.singleDataText}>{name.length >= 12 ? name.slice(0, 10).toUpperCase().concat('...') : name.toUpperCase()}</Text>
+                                </View>
+                                <View style={styles.singleDataImagesContainer}>
+                                    <TouchableOpacity style={styles.viewImageContainer}
+                                        //   activeOpacity={0.8} 
+                                        onPress={() => {
+                                            // EXPANDED VIEW
+                                            if (id === id) {
+                                                changeLayout();
+                                            }
+                                            else {
+                                                Alert.alert('Else');
+                                            }
+                                        }}
+                                    >
+                                        {/* NEED WORK FOR CONDTIONAL IMAGE HIDE IMAGE OR UNHIDE IMAGE */}
+                                        <Image
+                                            source={viewIcon}
+                                            style={styles.singleViewImage}
+                                        />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.editImageContainer}
+                                        onPress={() => singleDataEditDetail()}
+                                    >
+                                        <Image
+                                            source={require('../../assets/images/edit_image.png')}
+                                            style={styles.singleEditImage}
+                                        />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.singleDeleteImageContainer}
+                                        onPress={() => singleDataDelete()}
+                                    >
+                                        <Image
+                                            source={require('../../assets/images/delete_image.png')}
+                                            style={styles.singleDeleteImage}
+                                        />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.singleWhatsappImageContainer}
+                                        onPress={() => singlePhoneNoSharingWhatsapp()}
+                                    >
+                                        <Image
+                                            source={require('../../assets/images/whatsapp_image1.png')}
+                                            style={styles.singleWhatsappImage}
+                                        />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                            {/* {
+                id === specificId && 
+            } */}
+                            <DataTable style={[styles.tableContainer, { height: expandedView ? null : 0, overflow: 'hidden' }]}>
+                                <DataTable.Header style={styles.tableHeader}>
+                                    <DataTable.Title style={styles.tableTitle}>{"Person"}</DataTable.Title>
+                                    <DataTable.Title style={styles.tableTitle}>{'Details'}</DataTable.Title>
+                                </DataTable.Header>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Name'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{name}</DataTable.Cell>
+                                </DataTable.Row>
+
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Room no'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{roomno}</DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Contact'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{contact}</DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Address'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{address}</DataTable.Cell>
+                                </DataTable.Row>
+                                {/* <DataTable.Row style={styles.tableDataCell}>
+                    <DataTable.Cell style={styles.tableCellTitle}>{Image}</DataTable.Cell>
+                    <DataTable.Cell style={styles.tableCellTitle}>{Image}</DataTable.Cell>
+                </DataTable.Row> */}
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{"Image"}</DataTable.Cell>
+                                    <ImageBackground
+                                        source={{ uri: image }}
+                                        resizeMode="stretch"
+                                        style={styles.getImage}
+                                    />
+                                </DataTable.Row>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Advanced amount'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{advanceamount}</DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Date'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{new Date(date).getDate().toString() + '/' + (new Date(date).getMonth() + 1).toString() + '/' + new Date(date).getFullYear().toString()}</DataTable.Cell>
+                                </DataTable.Row>
+                            </DataTable>
+                        </>
+                        :
+                        null
+                }
+
+            </View>
+        )
+    }
+    const AddItems = ({ addItems: { Name, Room_no, Contact, Address, Image, Advanced_amount, Dates }, id }) => {
         // console.log('AddItems addperson Name', Name)
         // console.log('AddItems addperson Room_no', Room_no)
         // console.log('AddItems addperson Contact', Contact)
@@ -424,11 +678,12 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         // let getDat = [];
         // const image = Image
         // getDat.push(image)
-        let hello = date;
-        console.log('hello', hello);
+        let hello = Dates;
+        // console.log('hello', hello);
         let dates = new Date(hello);
-        console.log('AddItems to date', dates.getDate().toString() + '/' + (dates.getMonth().toString() + 1) + '/' + dates.getFullYear().toString())
-
+        // console.log('AddItems to date', dates.getDate().toString() + '/' + (dates.getMonth().toString() + 1) + '/' + dates.getFullYear().toString())
+        console.log('additems key [id]=========>', [id]);
+        console.log('additems key id=========>', id);
         return (
             <View>
 
@@ -437,60 +692,104 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                         <Text>No data</Text>
                         :
                         // <DataTable style={styles.tableContainer} key={Object.keys(item).toString()}>
-                        <DataTable style={styles.tableContainer}>
+                        // {/* //VIEW EDIT DELETE */}
+                        <>
+                            <SingleDataHeader name={Name} id={id} roomno={Room_no} contact={Contact} address={Address} image={Image} advanceamount={Advanced_amount} date={Dates} />
 
+                            {/* <DataTable style={[styles.tableContainer,  {height:expandedView?null:0,overflow:'hidden'}]}>
                             <DataTable.Header style={styles.tableHeader}>
-                                <DataTable.Title style={styles.tableTitle}>{"Person"}</DataTable.Title>
-                                <DataTable.Title style={styles.tableTitle}>{'Details'}</DataTable.Title>
-                            </DataTable.Header>
-                            <DataTable.Row style={styles.tableDataCell}>
-                                <DataTable.Cell style={styles.tableCellTitle}>{'Name'}</DataTable.Cell>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Name}</DataTable.Cell>
-                            </DataTable.Row>
-                            <DataTable.Row style={styles.tableDataCell}>
-                                <DataTable.Cell style={styles.tableCellTitle}>{'Room no'}</DataTable.Cell>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Room_no}</DataTable.Cell>
-                            </DataTable.Row>
-                            <DataTable.Row style={styles.tableDataCell}>
-                                <DataTable.Cell style={styles.tableCellTitle}>{'Contact'}</DataTable.Cell>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Contact}</DataTable.Cell>
-                            </DataTable.Row>
-                            <DataTable.Row style={styles.tableDataCell}>
-                                <DataTable.Cell style={styles.tableCellTitle}>{'Address'}</DataTable.Cell>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Address}</DataTable.Cell>
-                            </DataTable.Row>
+                                    <DataTable.Title style={styles.tableTitle}>{"Person"}</DataTable.Title>
+                                    <DataTable.Title style={styles.tableTitle}>{'Details'}</DataTable.Title>
+                                </DataTable.Header>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Name'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{Name}</DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Room no'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{Room_no}</DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Contact'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{Contact}</DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Address'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{Address}</DataTable.Cell>
+                                </DataTable.Row> */}
                             {/* <DataTable.Row style={styles.tableDataCell}>
                     <DataTable.Cell style={styles.tableCellTitle}>{Image}</DataTable.Cell>
                     <DataTable.Cell style={styles.tableCellTitle}>{Image}</DataTable.Cell>
                 </DataTable.Row> */}
-                            <DataTable.Row style={styles.tableDataCell}>
-                                <DataTable.Cell style={styles.tableCellTitle}>{"Image"}</DataTable.Cell>
-                                <ImageBackground
-                                    source={{ uri: Image }}
-                                    resizeMode="stretch"
-                                    style={styles.getImage}
-                                />
-                            </DataTable.Row>
-                            <DataTable.Row style={styles.tableDataCell}>
-                                <DataTable.Cell style={styles.tableCellTitle}>{'Advanced amount'}</DataTable.Cell>
-                                <DataTable.Cell style={styles.tableCellTitle}>{Advanced_amount}</DataTable.Cell>
-                            </DataTable.Row>
-                            <DataTable.Row style={styles.tableDataCell}>
-                                <DataTable.Cell style={styles.tableCellTitle}>{'Date'}</DataTable.Cell>
-                                <DataTable.Cell style={styles.tableCellTitle}>{dates.getDate().toString() + '/' + (dates.getMonth() + 1).toString() + '/' + dates.getFullYear().toString()}</DataTable.Cell>
-                            </DataTable.Row>
-
-
-                        </DataTable>
-                    // :
-                    // <View>
-                    //     <Text>{"DATA IS EMPTY"}</Text>
-                    // </View>
+                            {/* <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{"Image"}</DataTable.Cell>
+                                    <ImageBackground
+                                        source={{ uri: Image }}
+                                        resizeMode="stretch"
+                                        style={styles.getImage}
+                                    />
+                                </DataTable.Row>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Advanced amount'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{Advanced_amount}</DataTable.Cell>
+                                </DataTable.Row>
+                                <DataTable.Row style={styles.tableDataCell}>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{'Date'}</DataTable.Cell>
+                                    <DataTable.Cell style={styles.tableCellTitle}>{dates.getDate().toString() + '/' + (dates.getMonth() + 1).toString() + '/' + dates.getFullYear().toString()}</DataTable.Cell>
+                                </DataTable.Row>
+                            </DataTable> */}
+                        </>
                 }
-
             </View>
         )
     }
+    // const [expandedView, setExpandedView] = React.useState(false);
+    // console.log('The EXPANDED VIEW ====>', expandedView);
+    //         // VIEW ICON FOR HIDE OR UNHIDE
+    //         const [viewIconImage,setViewIconImage] = React.useState(false);
+    //         const viewIcon = viewIconImage?require('../../assets/images/view_image.png'):require('../../assets/images/hide_view_image.png');
+    //        console.log('viewIconImage',viewIconImage);
+    // VIEW DETAILS ALL DATA DELETE FUNCTION
+    function deleteAllData() {
+        remove(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}`));
+
+    }
+    // ALERT WITH QUESTION FOR DELETE ALL DATA IN VIEW DETAILS
+    function askQuestionWithAlert() {
+        Alert.alert(
+            'Last confirmation',
+            'Are you sure you are deleting the all data?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('User not deleted'),
+                    style: 'cancel'
+                },
+                {
+                    text: 'Delete All',
+                    onPress: () => deleteAllData(),
+                }
+            ]
+
+        )
+    }
+    const nameLength = 'thameem ansari'
+    let addPersonKey = Object.keys(getData);
+    console.log('addPersonKey is =======>', addPersonKey);
+
+    // SINGLE DATA DELETE 
+    let singleUserName = addPersonKey.length > 0 ? (addPersonKey.map(key => getData[key])) : null;
+    console.log('singleUserName ===>', singleUserName);
+
+    // function singleDataDelete() {
+    //     if (singleUserName === userNameVal.signupUsername) {
+    //         Alert.alert('Same');
+    //     }
+    //     else {
+    //         console.log('failed')
+    //     }
+    //     // remove (ref(db,`/addperson_${userNameVal.signupUsername+' '+userNameVal.signupPassword}`))
+    // }
     return (
         <View style={styles.container}>
             {/* <View style={[styles.headerContainer, viewDetails && { marginVertical: 35 }]}> */}
@@ -522,11 +821,37 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                         setAddRoom(false)
                         setViewDetails(true)
                         setAddPerson(false)
+                        setName('');
+                        setContact('');
+                        setAddress('');
+                        setAdvancedAmount('');
+                        setSelectedRoomNo('');
+                        setFetchImage('');
+                        setFocus({ style5: false })
+                        setUpdateData(false);
+                        setSpecificId()
+                        setDate(new Date())
                     }}
                 >
                     <Text style={[styles.viewDetailsText, viewDetails && { color: 'black' }]}>{"View Details"}</Text>
                 </TouchableOpacity>
             </View>
+            {/* DELETE ALL DATA FROM FIREBASE */}
+            {
+                viewDetails && addPersonKey.length > 0 ?
+
+                    <View style={styles.allDeleteImageContainer}>
+                        <TouchableOpacity style={styles.allDeleteImage}
+                            onPress={() => askQuestionWithAlert()}>
+                            <Image
+                                source={require('../../assets/images/all_delete_image.png')}
+                                style={styles.allDeleteItems}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    :
+                    null
+            }
 
             {/* //CONDTIONAL TO RETIEVE DATA FROM (ADD PERSON)... */}
             {
@@ -542,7 +867,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                 placeholderTextColor={'#C4C4C4'}
                                 value={name}
                                 onChangeText={(text) => {
-                                    console.log(text);
+                                    // console.log(text);
                                     setName(text);
                                 }}
                                 onFocus={() => setFocus({ style1: !false })}
@@ -601,7 +926,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                 placeholderTextColor={'#C4C4C4'}
                                 value={contact}
                                 onChangeText={(text) => {
-                                    console.log(text);
+                                    // console.log(text);
                                     setContact(text)
                                 }}
                                 onFocus={() => setFocus({ style3: !false })}
@@ -620,7 +945,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                 placeholderTextColor={'#C4C4C4'}
                                 value={address}
                                 onChangeText={(text) => {
-                                    console.log(text);
+                                    // console.log(text);
                                     setAddress(text);
                                 }}
                                 onFocus={() => setFocus({ style4: !false })}
@@ -680,7 +1005,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                 placeholderTextColor={'#C4C4C4'}
                                 value={advancedAmount}
                                 onChangeText={(text) => {
-                                    console.log(text);
+                                    // console.log(text);
                                     setAdvancedAmount(text)
                                 }}
                                 onFocus={() => setFocus({ style5: !false })}
@@ -725,10 +1050,22 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                         style={styles.addButton}
                         onPress={
                             () => {
-                                addPersonValidation()
+                                loginLoader ?
+                                    null
+                                    :
+                                    addPersonValidation()
                             }
                         }>
-                        <Text style={styles.addText}>{"Add"}</Text>
+                        {
+                            loginLoader ?
+                                <ActivityIndicator
+                                    size={"large"}
+                                    color="#00C0F0"
+                                />
+                                :
+                                <Text style={styles.addText}>{"Add"}</Text>
+
+                        }
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.addButton}
@@ -736,6 +1073,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                             () => {
                                 navigate('Login');
                                 getUserName();
+
                             }
                         }>
                         <Text style={styles.addText}>{"Logout"}</Text>
@@ -757,7 +1095,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                 placeholderTextColor={'#C4C4C4'}
                                 value={roomNo1}
                                 onChangeText={(text) => {
-                                    console.log(text);
+                                    // console.log(text);
                                     setRoomNo1(text);
                                 }}
                                 onFocus={() => setFocus({ style6: !false })}
@@ -776,7 +1114,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                 placeholderTextColor={'#C4C4C4'}
                                 value={noOfPerson}
                                 onChangeText={(text) => {
-                                    console.log(text);
+                                    // console.log(text);
                                     setNoOfPerson(text);
                                 }}
                                 onFocus={() => setFocus({ style7: !false })}
@@ -874,6 +1212,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,
+        borderWidth: .4,
+        borderColor: 'black'
     },
     addPersonText: {
         fontFamily: 'Rubik',
@@ -890,6 +1230,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,
+        borderWidth: .4,
+        borderColor: 'black'
     },
     addRoomText: {
         fontFamily: 'Rubik',
@@ -906,6 +1248,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,
+        borderWidth: .4,
+        borderColor: 'black'
     },
     viewDetailsText: {
         fontFamily: 'Rubik',
@@ -1265,4 +1609,200 @@ const styles = StyleSheet.create({
         right: 0,
         bottom: -10,
     },
+    allDeleteImageContainer: {
+        // backgroundColor: 'green',
+        // marginVertical:2
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        marginHorizontal: 20,
+        marginBottom: 5,
+
+
+    },
+    allDeleteImage: {
+        backgroundColor: '#C4C4C4',
+        width: 30,
+        height: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        elevation: 5,
+        borderWidth: .4,
+        borderColor: 'black'
+    },
+    allDeleteItems: {
+        width: 22,
+        height: 22,
+        // resizeMode:'cover'
+        resizeMode: 'contain',
+
+
+    },
+    singleDataContainer: {
+        backgroundColor: 'lightgray',
+        flexDirection: 'row',
+        // width: '100%',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        marginHorizontal: 10,
+        marginBottom: 10,
+        // flexShrink:1,
+        borderRadius: 5,
+        // borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        elevation: 5,
+
+
+    },
+    singleDataTextContainer: {
+        flexGrow: 1,
+        flexShrink: 1,
+        flexBasis: 100,
+        // width: '60%',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        paddingLeft: 20,
+    },
+    singleDataText: {
+        fontfamily: 'Calibri',
+        fontStyle: 'normal',
+        fontWeight: '500',
+        fontSize: 17,
+        color: '#121212',
+        // marginHorizontal: 10,
+        // flexGrow: 1,
+        // flexShrink: 1,
+    },
+    singleDataImagesContainer: {
+        flexDirection: 'row',
+        // backgroundColor: 'green',
+        // flexGrow: 1,
+        width: '50%',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        marginHorizontal: 5,
+        // borderRadius:5,
+        marginVertical: 5,
+
+    },
+    viewImageContainer: {
+        backgroundColor: '#a8b6ee',
+        width: 25,
+        height: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 3,
+        borderRadius: 40,
+        // borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        // elevation: 5,
+        borderWidth: .4,
+        borderColor: 'black'
+    },
+    singleViewImage: {
+        width: 20,
+        height: 20,
+        resizeMode: 'contain',
+    },
+    editImageContainer: {
+        backgroundColor: '#a8b6ee',
+        width: 25,
+        height: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 3,
+        borderRadius: 40,
+        // borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        // elevation: 5,
+        borderWidth: .4,
+        borderColor: 'black'
+    },
+    singleEditImage: {
+        width: 15,
+        height: 12,
+        resizeMode: 'contain',
+
+    },
+    singleDeleteImageContainer: {
+        backgroundColor: '#a8b6ee',
+        width: 25,
+        height: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 3,
+        borderRadius: 40,
+        // borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        // elevation: 5,
+        borderWidth: .4,
+        borderColor: 'black'
+    },
+    singleDeleteImage: {
+        width: 15,
+        height: 15,
+        resizeMode: 'contain',
+
+    },
+    singleWhatsappImageContainer: {
+        backgroundColor: '#a8b6ee',
+        width: 25,
+        height: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 3,
+        borderRadius: 40,
+        // borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        // elevation: 5,
+        borderWidth: .4,
+        borderColor: 'black'
+    },
+    singleWhatsappImage: {
+        width: 15,
+        height: 15,
+        resizeMode: 'contain',
+        tintColor: 'black'
+    },
+    roomNoShowContainer: {
+        backgroundColor: '#a8b6ee',
+        // width: 30,
+        // height: 30,
+        margin: 3,
+        borderRadius: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        // elevation: 5,
+        justifyContent: 'center',
+        alignItems: "center",
+    },
+    roomNoShowText: {
+        fontfamily: 'Calibri',
+        fontStyle: 'normal',
+        fontWeight: '500',
+        fontSize: 17,
+        color: '#121212',
+    }
 })
