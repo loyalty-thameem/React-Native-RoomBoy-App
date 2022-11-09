@@ -933,10 +933,14 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         // }, 3000);
         setFetchData([...data])
     }, [getData])
+    // FILTER SECTIONS
+    const [filterIcon, setFilterIcon] = React.useState(true);
+    let filterIcons = filterIcon ? require('../../assets/images/up-arrow.png') : require('../../assets/images/down-arrow.png')
+
     return (
         <View style={styles.container}>
             {/* <View style={[styles.headerContainer, viewDetails && { marginVertical: 35 }]}> */}
-            <View style={[styles.headerContainer, viewDetails && addPersonKey.length > 0 ? { marginVertical: 35 } : null||viewDetails && addPersonKey.length == 0 ? { marginVertical: 17 } : null]}>
+            <View style={[styles.headerContainer, viewDetails && addPersonKey.length > 0 ? { marginVertical: 35 } : null || viewDetails && addPersonKey.length == 0 ? { marginVertical: 17 } : null]}>
                 <TouchableOpacity style={[styles.addPersonButton, addPerson && { backgroundColor: '#28C76F' }]}
                     onPress={() => {
                         // Alert.alert('Add Person');
@@ -980,41 +984,60 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                 </TouchableOpacity>
             </View>
             {/* ASCENDING ORDER FOR ALL DATA */}
-            {
-                viewDetails && addPersonKey.length > 0 ?
+            {/* { */}
+            {/* // viewDetails && addPersonKey.length > 0 ?
 
-                    <View style={styles.allDeleteImageContainer}>
+                //     <View style={styles.allDeleteImageContainer}>
                         {/* <TouchableOpacity
                             // style={styles.allDeleteImage}
                             onPress={() => ascendingOrder()}
                         > */}
-                        <Button title="Ascending Order"
+            {/* <Button title="Ascending Order"
                             onPress={() => ascendingOrder()}
                         />
                         <Button title="Descending Order"
                             onPress={() => descendingOrder()}
-                        />
-                        {/* <Image
+                        /> */}
+            {/* <Image
                                 source={require('../../assets/images/all_delete_image.png')}
                                 style={styles.allDeleteItems}
                             /> */}
-                        {/* </TouchableOpacity> */}
-                    </View>
-                    :
-                    null
-            }
+            {/* </TouchableOpacity> */}
+            {/* // </View> */}
+            {/* // : */}
+            {/* // // null  */}
+            {/* // } */}
             {/* DELETE ALL DATA FROM FIREBASE */}
             {
                 viewDetails && addPersonKey.length > 0 ?
-
-                    <View style={styles.allDeleteImageContainer}>
-                        <TouchableOpacity style={styles.allDeleteImage}
-                            onPress={() => askQuestionWithAlert()}>
-                            <Image
-                                source={require('../../assets/images/all_delete_image.png')}
-                                style={styles.allDeleteItems}
-                            />
-                        </TouchableOpacity>
+                    <View style={styles.deleteAndFilterContainer}>
+                        <View style={styles.allDeleteImageContainer}>
+                            <TouchableOpacity style={styles.allDeleteImage}
+                                onPress={() => askQuestionWithAlert()}>
+                                <Image
+                                    source={require('../../assets/images/all_delete_image.png')}
+                                    style={styles.allDeleteItems}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.allDeleteImageContainer}>
+                            <TouchableOpacity style={styles.allDeleteImage}
+                                onPress={() => {
+                                    if (filterIcon) {
+                                        setFilterIcon(false);
+                                        ascendingOrder();
+                                    }
+                                    else {
+                                        setFilterIcon(true);
+                                        descendingOrder();
+                                    }
+                                }}>
+                                <Image
+                                    source={filterIcons}
+                                    style={styles.allDeleteItems}
+                                />
+                            </TouchableOpacity>
+                        </View>
                     </View>
                     :
                     null
@@ -1802,6 +1825,10 @@ const styles = StyleSheet.create({
         right: 0,
         bottom: -10,
     },
+    deleteAndFilterContainer: {
+        flexDirection:'row-reverse',
+
+    },
     allDeleteImageContainer: {
         // backgroundColor: 'green',
         // marginVertical:2
@@ -1829,8 +1856,8 @@ const styles = StyleSheet.create({
         borderColor: 'black'
     },
     allDeleteItems: {
-        width: 22,
-        height: 22,
+        width: 20,
+        height: 20,
         // resizeMode:'cover'
         resizeMode: 'contain',
 
@@ -1999,10 +2026,10 @@ const styles = StyleSheet.create({
         color: '#121212',
     },
     noDataContainer: {
-        justifyContent:'center',
-        alignItems:'center',
+        justifyContent: 'center',
+        alignItems: 'center',
         // margin:30
-        marginVertical:30,
+        marginVertical: 30,
     },
     noData: {
         // fontFamily: 'Arial',
