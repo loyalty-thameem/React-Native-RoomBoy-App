@@ -199,7 +199,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             newUserData();
             //LOGIN
             navigate('Login')
-            
+
         }
         else if (usernamedata.includes(signupUsername)) {
             Alert.alert('Username already exists')
@@ -222,8 +222,8 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             getUserVal();
             //FIREBASE STORE...
             newUserData();
-             //LOGIN
-             navigate('Login')
+            //LOGIN
+            navigate('Login')
         }
         else {
             setIfSignIn(false);
@@ -454,11 +454,16 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                             :
                             <TouchableOpacity style={styles.loginButtonContainer}
                                 onPress={() => {
-
-                                    signUpValidation()
+                                    {
+                                        !loginLoader ? null :
+                                            signUpValidation()
+                                    }
                                 }}>
-
-                                <Text style={styles.loginLabelText}>{'Signup'}</Text>
+                                {
+                                    !loginLoader ? <ActivityIndicator size={'large'} color="#00C0F0" />
+                                        :
+                                        <Text style={styles.loginLabelText}>{'Signup'}</Text>
+                                }
                             </TouchableOpacity>
                         }
                         <View style={styles.orAndSignupContainer}>
