@@ -115,16 +115,21 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
 
     // }, 2000);
+    let thameem ='thameem'
     React.useEffect(() => {
         // return onValue(ref(db, `/addRoomNoWithPerson_${addRoom.roomNo + "_" + addRoom.roomPerson}`), querySnapShot => {
-        return onValue(ref(db, `/addRoomNoWithPerson`), querySnapShot => {
+        return onValue(ref(db, `/addRoomNoWithPerson_${userNameVal.signupEmail}`), querySnapShot => {
             let data = querySnapShot.val() || {};
             // console.log('DATA USEEFFECT ====>', data);
             let dataItems = { ...data };
+            setTimeout(() => {
+            console.log('DATA DATAITEMS USEEFFECT =====>', dataItems);
+            }, 3000);
             // console.log('DATA DATAITEMS USEEFFECT =====>', dataItems);
             setStoredRoomNo(dataItems);
         })
-    }, [])
+        // MUST PASS DEPENDENCE ARRAY AND NAME, ROOMNO1 WHEN CHANGE ON THE IN THIS HOOK WORK
+    }, [name,roomNo1])
     //STORE
     function addRoomNoWithPerson() {
         // NOT GOOD
@@ -134,7 +139,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         // });
         // GOOD
         // push(ref(db, `/addRoomNoWithPerson_${addRoom.roomNo + "_" + addRoom.roomPerson}`), addRoomNoWithPersonData);
-        push(ref(db, `/addRoomNoWithPerson`), addRoomNoWithPersonData);
+        push(ref(db, `/addRoomNoWithPerson_${userNameVal.signupEmail}`), addRoomNoWithPersonData);
     }
     //DROPDOWN SELECT PICKER...
     const [selectedRoomNo, setSelectedRoomNo] = React.useState();
@@ -186,7 +191,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             // }
             setAddPerson(false);
             setViewDetails(true);
-            update(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}/${specificId}`), {
+            update(ref(db, `/addperson_${userNameVal.signupEmail + ' ' + userNameVal.signupPassword}/${specificId}`), {
                 // [specificId]: {
                 Name: name,
                 Room_no: selectedRoomNo,
@@ -500,14 +505,14 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     const [userNameVal, setUserNameVal] = React.useState('')
     // const [userNameVal, setUserNameVal] = React.useState([]);
     // console.log('userNameVal', userNameVal.signupUsername+' '+userNameVal.signupPassword + userNameVal.password);
-    console.log("Usernamevalue=========>", userNameVal.signupUsername);
+    console.log("Usernamevalue=========>", userNameVal.signupEmail);
     console.log("Usernamevalue=========>", userNameVal);
     React.useEffect(() => {
         getUserName();
     }, []);
     React.useEffect(() => {
         setLoader(true);
-        return onValue(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}`), querySnapShot => {
+        return onValue(ref(db, `/addperson_${userNameVal.signupEmail + ' ' + userNameVal.signupPassword}`), querySnapShot => {
             // return onValue(ref(db, '/addperson'), querySnapShot => {
             let data = querySnapShot.val() || {};
             let todoItems = { ...data };
@@ -549,7 +554,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     }, [])
 
     function addNewPerson() {
-        push(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}`), {
+        push(ref(db, `/addperson_${userNameVal.signupEmail + ' ' + userNameVal.signupPassword}`), {
             // push(ref(db, '/addperson'), {
             //   addperson: value,
             //    value,
@@ -604,7 +609,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                 // Alert.alert('same')
                 // const id = id ==== id ? id: null;
                 // const specifiUserKey = 
-                remove(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}/${id}`))
+                remove(ref(db, `/addperson_${userNameVal.signupEmail + ' ' + userNameVal.signupPassword}/${id}`))
                 // console.log("singleDataDelete ID",id)
             }
             else {
@@ -863,7 +868,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     //        console.log('viewIconImage',viewIconImage);
     // VIEW DETAILS ALL DATA DELETE FUNCTION
     function deleteAllData() {
-        remove(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}`));
+        remove(ref(db, `/addperson_${userNameVal.signupEmail + ' ' + userNameVal.signupPassword}`));
 
     }
     // ALERT WITH QUESTION FOR DELETE ALL DATA IN VIEW DETAILS

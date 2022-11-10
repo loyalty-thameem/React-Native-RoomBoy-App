@@ -33,7 +33,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     Object.keys(getUserName).forEach((key) => {
         if (getUserName[key] === getUserName[key]) {
             // console.log('The Object key getUsername', getUserName[key].username);
-            let usernameValue = getUserName[key] === null ? 'null' : getUserName[key].signupUsername;
+            let usernameValue = getUserName[key] === null ? 'null' : getUserName[key].signupEmail;
             dataAra.push(usernameValue);
         }
     })
@@ -68,8 +68,8 @@ const LoginScreen = ({ navigation: { navigate } }) => {
 
     //LOGIN VALIDATION
     const loginValidation = () => {
-        if (signupUsername.length === 0) {
-            Alert.alert('Please Enter your username');
+        if (signupEmail.length === 0) {
+            Alert.alert('Please Enter your email');
         }
         else if (signupPassword.length === 0) {
             Alert.alert('Please Enter your password')
@@ -80,13 +80,17 @@ const LoginScreen = ({ navigation: { navigate } }) => {
         else if (checked === true) {
             Alert.alert('Temporarily user not allowed')
         }
-        else if (usernamedata === null || !usernamedata.includes(signupUsername)) {
-            Alert.alert("Please register username doesn't exists")
+        else if (regex.test(signupEmail) === false) {
+            Alert.alert(signupEmail + ' ' + 'is not a valid email address')
+        }
+        // FIREBASE CAN'T ACCEPTED @ AND . IN URL TYPE SO I REPLACED FOR @ AND .
+        else if (usernamedata === null || !usernamedata.includes(signupEmail.replace('@','AT').replace('.','DOT'))) {
+            Alert.alert("Please register email doesn't exists")
         }
         else if (userpassworddata === null || !userpassworddata.includes(signupPassword)) {
             Alert.alert('Please enter register password')
         }
-        else if (checked === false && signupUsername && signupPassword) {
+        else if (checked === false && signupEmail && signupPassword) {
             // console.log('MY world =====>',username);
             // console.log('MY world =====>',password);
             navigate('Home');
@@ -95,7 +99,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             setRememberChecked(false);
             setUsername('');
             setPassword('');
-            setSignupUsername('')
+            setSignupEmail('')
             setSignupPassword('')
             setFocus({ style1: false })
             setFocus({ style2: false })
@@ -112,13 +116,14 @@ const LoginScreen = ({ navigation: { navigate } }) => {
 
     //SIGN PAGE...
     const [ifSignIn, setIfSignIn] = React.useState(false);
-    const [signupUsername, setSignupUsername] = React.useState('');
+    const [signupEmail, setSignupEmail] = React.useState('');
     const [signupPassword, setSignupPassword] = React.useState('');
     const [signupConfirmPassword, setSignupConfirmPassword] = React.useState('');
 
     //SIGNUP LOCALSTORAGE...
     const signupValue = {
-        signupUsername,
+        // FIREBASE CAN'T ACCEPTED @ AND . IN URL TYPE SO I REPLACED FOR @ AND .
+        signupEmail:signupEmail.replace('@','AT').replace('.','DOT'),
         signupPassword
     }
     const storeUser = async () => {
@@ -132,7 +137,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     function newUserData() {
         // push(ref(db, `username_${signupValue.username}`), {
         push(ref(db, 'user'), {
-            username: signupValue.signupUsername,
+            username: signupValue.signupEmail,
             password: signupValue.signupPassword
         })
 
@@ -159,10 +164,16 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     let userpassworddata = helloKey.length > 0 ? (helloKey.map(key => userNameData[key].password)) : null;
     console.log('usernamedata', usernamedata);
     console.log('userpassworddata', userpassworddata);
+    // REGULAR EXPRESSION FOR EMAIL VALIDATION
+    // UPPERCASE LETTER IS ALLOWED FOR EMAIL
+    // let regex = new RegExp('[a-z0-9]+@[a-z]+\.[a-z]{2,3}');
+    // UPPERCASE LETTER NOT ALLOWED FOR EMAIL
+    let regex = new RegExp('^[a-z]+\@[^\s]+\.[^\s]+$');
+
     // SIGNUP VALIDATION... 
     const signUpValidation = () => {
-        if (signupUsername.length === 0) {
-            Alert.alert('Please Enter your username');
+        if (signupEmail.length === 0) {
+            Alert.alert('Please Enter your email');
         }
         // else if (username === getUserName.username) {
         //     Alert.alert('Username already exists')
@@ -179,6 +190,9 @@ const LoginScreen = ({ navigation: { navigate } }) => {
         else if (checked === true) {
             Alert.alert('Temporarily user not allowed')
         }
+        else if (regex.test(signupEmail) === false) {
+            Alert.alert(signupEmail + ' ' + 'is not a valid email address')
+        }
         // else if (dataAra.includes(username)) {
         else if (usernamedata === null) {
             // navigate('Home');
@@ -186,7 +200,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             setChecked(false);
             setUsername('');
             setPassword('');
-            setSignupUsername('')
+            setSignupEmail('')
             setSignupPassword('')
             setSignupConfirmPassword('')
             setIfSignIn(false);
@@ -201,19 +215,19 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             navigate('Login')
 
         }
-        else if (usernamedata.includes(signupUsername)) {
-            Alert.alert('Username already exists')
+        else if (usernamedata.includes(signupEmail)) {
+            Alert.alert('Email already exists')
         }
         // else if (userpassworddata.includes(signupPassword)) {
         //     Alert.alert('User password already exists')
         // }
-        else if (checked === false && signupUsername && signupPassword && signupConfirmPassword) {
+        else if (checked === false && signupEmail && signupPassword && signupConfirmPassword) {
             // navigate('Home');
             Alert.alert('Successfully registered!')
             setChecked(false);
             setUsername('');
             setPassword('');
-            setSignupUsername('')
+            setSignupEmail('')
             setSignupPassword('')
             setSignupConfirmPassword('')
             setIfSignIn(false);
@@ -261,17 +275,22 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                             <>
                                 <View style={styles.inputFieldContainer}>
                                     <View style={styles.phoneLabelContainer}>
-                                        <Text style={styles.phoneText}>{"Username"}</Text>
+                                        <Text style={styles.phoneText}>{"Email"}</Text>
                                     </View>
                                     <View style={customStyle1}>
                                         <TextInput
-                                            placeholder='Your Username'
+                                            placeholder='Your Email'
                                             placeholderTextColor={'#C4C4C4'}
+                                            keyboardType='email-address'
+                                            autoCapitalize='none'
+                                            autoComplete='email'
+                                            textContentType='emailAddress'
+                                            autoCorrect={false}
                                             onChangeText={(usernameTextValue) => {
                                                 // console.log('usernameTextValue', usernameTextValue);
-                                                setSignupUsername(usernameTextValue);
+                                                setSignupEmail(usernameTextValue);
                                             }}
-                                            value={signupUsername}
+                                            value={signupEmail}
                                             style={styles.usernameTextInput}
                                             onFocus={() => setFocus({ style1: !false })}
                                         />
@@ -303,17 +322,22 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                             <>
                                 <View style={styles.inputFieldContainer}>
                                     <View style={styles.phoneLabelContainer}>
-                                        <Text style={styles.phoneText}>{"Username"}</Text>
+                                        <Text style={styles.phoneText}>{"Email"}</Text>
                                     </View>
                                     <View style={customStyle4}>
                                         <TextInput
-                                            placeholder='Your Username'
+                                            placeholder='Your Email'
                                             placeholderTextColor={'#C4C4C4'}
+                                            keyboardType='email-address'
+                                            autoCapitalize='none'
+                                            autoComplete='email'
+                                            textContentType='emailAddress'
+                                            autoCorrect={false}
                                             onChangeText={(usernameTextValue) => {
                                                 // console.log('usernameTextValue', usernameTextValue);
-                                                setSignupUsername(usernameTextValue);
+                                                setSignupEmail(usernameTextValue);
                                             }}
-                                            value={signupUsername}
+                                            value={signupEmail}
                                             style={styles.usernameTextInput}
                                             onFocus={() => setFocus({ style4: !false })}
                                         />
@@ -478,7 +502,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                                             setChecked(false);
                                             // setUsername('');
                                             // setPassword('');
-                                            setSignupUsername('');
+                                            setSignupEmail('');
                                             setSignupPassword('');
                                             setFocus({ style1: false })
                                             setFocus({ style2: false })
@@ -495,7 +519,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                                             setRememberChecked(false);
                                             setUsername('');
                                             setPassword('');
-                                            setSignupUsername('')
+                                            setSignupEmail('')
                                             setSignupPassword('')
                                             setSignupConfirmPassword('')
                                             setFocus({ style2: false })
