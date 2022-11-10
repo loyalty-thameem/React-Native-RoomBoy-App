@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, BackHandler, Button, FlatList, Image, ImageBackground, LayoutAnimation, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, UIManager, View } from 'react-native'
+import { ActivityIndicator, Alert, BackHandler, Button, Dimensions, FlatList, Image, ImageBackground, LayoutAnimation, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, UIManager, View } from 'react-native'
 import React from 'react'
 import DocumentPicker, { types } from 'react-native-document-picker';
 import DatePicker from 'react-native-date-picker'
@@ -82,7 +82,9 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     // ADD ROOM DATA STORED TO FIREBASE REALTIME DATABASE
     const addRoomNoWithPersonData = {
         roomNo: roomNo1,
-        roomPerson: noOfPerson
+        roomPerson: noOfPerson,
+        // FOR REDUCE THE NUMBER OF PERSON
+        // roomPersonReduce: noOfPerson,
     }
     // GET
     const [storedRoomNo, setStoredRoomNo] = React.useState([])
@@ -96,8 +98,16 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     let storedRoomNoKey = Object.keys(storedRoomNo);
     // const dummyRoomNo = [101];
     let storedRoomNoKeyGet = storedRoomNoKey.length > 0 ? (storedRoomNoKey.map(key => storedRoomNo[key]).map(x => x.roomNo)) : null;
+    // let storedNoOfPersonKeyGet = storedRoomNoKey.length > 0 ? (storedRoomNoKey.map(key => storedRoomNo[key]).map(x => x.roomPerson)) : null;
 
+    // setTimeout(() => {
+    //     console.log('stored No of person key ===>', storedNoOfPersonKeyGet);
+    //     console.log('stored No of storedRoomNoKeyGet key ===>', storedRoomNoKeyGet);
+    //     let datass = storedNoOfPersonKeyGet?.map((val,key)=>{
+    //         console.log('stored No of val key ===>', val);
+    //         })
 
+    // }, 4000);
     // console.log('storedRoomNoKey ', storedRoomNoKeyGet)
     // setTimeout(() => {
     //     console.log('storeRoomNo setTimeout ====>', storedRoomNo);
@@ -106,16 +116,21 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
 
     // }, 2000);
+    let thameem ='thameem'
     React.useEffect(() => {
         // return onValue(ref(db, `/addRoomNoWithPerson_${addRoom.roomNo + "_" + addRoom.roomPerson}`), querySnapShot => {
-        return onValue(ref(db, `/addRoomNoWithPerson`), querySnapShot => {
+        return onValue(ref(db, `/addRoomNoWithPerson_${userNameVal.signupEmail}`), querySnapShot => {
             let data = querySnapShot.val() || {};
             // console.log('DATA USEEFFECT ====>', data);
             let dataItems = { ...data };
+            setTimeout(() => {
+            console.log('DATA DATAITEMS USEEFFECT =====>', dataItems);
+            }, 3000);
             // console.log('DATA DATAITEMS USEEFFECT =====>', dataItems);
             setStoredRoomNo(dataItems);
         })
-    }, [])
+        // MUST PASS DEPENDENCE ARRAY AND NAME, ROOMNO1 WHEN CHANGE ON THE IN THIS HOOK WORK
+    }, [name,roomNo1])
     //STORE
     function addRoomNoWithPerson() {
         // NOT GOOD
@@ -125,12 +140,22 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         // });
         // GOOD
         // push(ref(db, `/addRoomNoWithPerson_${addRoom.roomNo + "_" + addRoom.roomPerson}`), addRoomNoWithPersonData);
-        push(ref(db, `/addRoomNoWithPerson`), addRoomNoWithPersonData);
+        push(ref(db, `/addRoomNoWithPerson_${userNameVal.signupEmail}`), addRoomNoWithPersonData);
     }
     //DROPDOWN SELECT PICKER...
     const [selectedRoomNo, setSelectedRoomNo] = React.useState();
     // console.log('selectedRoomNo', selectedRoomNo)
+    //SELECTED ROOM NUMBER REDUCER FOR VALIDATE PURPOSE
+    // let roomNoOfPersonKeyGet = storedRoomNoKey.length > 0 ? (storedRoomNoKey.map(key => storedRoomNo[key]).map(x => x.roomPersonReduce).find((item)=>item === selectedRoomNo)) : null;
 
+    // setTimeout(() => {
+    //     // console.log('dummyroomnokey====>',dummyRoomNoKey?.find((item)=>item === selectedRoomNo));
+    //     console.log('dummyroomnokey====>',roomNoOfPersonKeyGet);
+    // }, 3000);
+    // const [selectedRoomNoLess, setSelectedRoomNoLess] = React.useState(2);
+    // setTimeout(() => {
+    //     console.log('selectedRoomNoLess ===>', selectedRoomNoLess)
+    // }, 3000);
     //ADD PERSON VALIDATION
     const addPersonValidation = () => {
         if (name.length === 0) {
@@ -167,7 +192,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             // }
             setAddPerson(false);
             setViewDetails(true);
-            update(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}/${specificId}`), {
+            update(ref(db, `/addperson_${userNameVal.signupEmail + ' ' + userNameVal.signupPassword}/${specificId}`), {
                 // [specificId]: {
                 Name: name,
                 Room_no: selectedRoomNo,
@@ -193,7 +218,17 @@ const HomeScreen = ({ navigation: { navigate } }) => {
 
 
         }
+        // else if (selectedRoomNoLess > 0) {
+        //      // VALIDATED FOR ROOM NUMBER REDUCE THE ROOM NUMBER
+        //      setSelectedRoomNoLess(prevState => prevState - 1);
+        // }
+        // else if (selectedRoomNoLess === 0) {
+        //     Alert.alert(`The room number is already added ${selectedRoomNoLess} person`);
+        // }
         else if (name && contact && selectedRoomNo && address && advancedAmount && fetchImage) {
+            // VALIDATED FOR ROOM NUMBER REDUCE THE ROOM NUMBER
+            // setSelectedRoomNoLess(prevState => prevState - 1);
+
             Alert.alert('Thank you');
             // storeUser();
             setAddPerson(false);
@@ -211,6 +246,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             addNewPerson();
             setDate(new Date())
             getUserName();
+
         }
         else {
             // Alert.alert('Invalid add person details')
@@ -366,9 +402,9 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     React.useEffect(() => {
         //ROOM NO  
         const roomNo = getData1.map((item, index) => {
-            setTimeout(() => {
-                console.log("item========>", item);
-            }, 3000);
+            // setTimeout(() => {
+            //     console.log("item========>", item);
+            // }, 3000);
             // console.log('useEffect roomNo item Object.values', item);
             // let dataPass = item === null ? 101 : JSON.parse(item.Room_no);
             // console.log("dataPass", dataPass)
@@ -470,14 +506,14 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     const [userNameVal, setUserNameVal] = React.useState('')
     // const [userNameVal, setUserNameVal] = React.useState([]);
     // console.log('userNameVal', userNameVal.signupUsername+' '+userNameVal.signupPassword + userNameVal.password);
-    console.log("Usernamevalue=========>", userNameVal.signupUsername);
+    console.log("Usernamevalue=========>", userNameVal.signupEmail);
     console.log("Usernamevalue=========>", userNameVal);
     React.useEffect(() => {
         getUserName();
     }, []);
     React.useEffect(() => {
         setLoader(true);
-        return onValue(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}`), querySnapShot => {
+        return onValue(ref(db, `/addperson_${userNameVal.signupEmail + ' ' + userNameVal.signupPassword}`), querySnapShot => {
             // return onValue(ref(db, '/addperson'), querySnapShot => {
             let data = querySnapShot.val() || {};
             let todoItems = { ...data };
@@ -519,7 +555,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     }, [])
 
     function addNewPerson() {
-        push(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}`), {
+        push(ref(db, `/addperson_${userNameVal.signupEmail + ' ' + userNameVal.signupPassword}`), {
             // push(ref(db, '/addperson'), {
             //   addperson: value,
             //    value,
@@ -574,7 +610,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                 // Alert.alert('same')
                 // const id = id ==== id ? id: null;
                 // const specifiUserKey = 
-                remove(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}/${id}`))
+                remove(ref(db, `/addperson_${userNameVal.signupEmail + ' ' + userNameVal.signupPassword}/${id}`))
                 // console.log("singleDataDelete ID",id)
             }
             else {
@@ -623,8 +659,8 @@ const HomeScreen = ({ navigation: { navigate } }) => {
         let helloKeys = Object.keys(getData);
         let naming = helloKeys.length > 0 ? (helloKeys.map(key => getData[key]).map(x => x.Name)) : null;
         console.log('Naming========>', naming.filter(x => x === name))
-        let hel = naming.filter(x => x === name);
-        console.log('hel', hel);
+        // let hel = naming.filter(x => x === name);
+        // console.log('hel', hel);
         console.log('helloKeys========>', helloKeys);
         const [expandedView, setExpandedView] = React.useState(false);
         console.log('The EXPANDED VIEW ====>', expandedView);
@@ -644,7 +680,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                 {
                     roomNoShow ?
                         <>
-                            <View key={id} style={[styles.singleDataContainer, !viewIconImage ? { borderWidth: .4, borderColor: 'black' } : { borderWidth: .4, borderColor: '#28C76F' }]}>
+                            <View key={roomno} style={[styles.singleDataContainer, !viewIconImage ? { borderWidth: .4, borderColor: 'black' } : { borderWidth: .4, borderColor: '#28C76F' }]}>
                                 <View style={styles.singleDataTextContainer}>
                                     <Text style={styles.singleDataText}>{name.length >= 12 ? name.slice(0, 10).toUpperCase().concat('...') : name.toUpperCase()}</Text>
                                 </View>
@@ -833,7 +869,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     //        console.log('viewIconImage',viewIconImage);
     // VIEW DETAILS ALL DATA DELETE FUNCTION
     function deleteAllData() {
-        remove(ref(db, `/addperson_${userNameVal.signupUsername + ' ' + userNameVal.signupPassword}`));
+        remove(ref(db, `/addperson_${userNameVal.signupEmail + ' ' + userNameVal.signupPassword}`));
 
     }
     // ALERT WITH QUESTION FOR DELETE ALL DATA IN VIEW DETAILS
@@ -872,15 +908,45 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     //     }
     //     // remove (ref(db,`/addperson_${userNameVal.signupUsername+' '+userNameVal.signupPassword}`))
     // }
-
+    // NO DATA IMAGE 
+    const windowWidth = Dimensions.get('window').width;
+    const windowHeight = Dimensions.get('window').height;
     // ASCENDING ORDER FUNCTION CALL
     function ascendingOrder() {
-        Alert.alert('ascendingOrder');
+        // Alert.alert('ascendingOrder');
+        let ascendingOrderItems = fetchData.sort((a, b) => a.Room_no - b.Room_no);
+        // console.log('ascendingOrderItems',ascendingOrderItems);
+        setFetchData([...ascendingOrderItems]);
+
     }
+
+    // DESCENDING ORDER FUNCTION CALL 
+    function descendingOrder() {
+        // Alert.alert('descendingOrder');
+        let descendingOrderItems = fetchData.sort((a, b) => b.Room_no - a.Room_no);
+        // console.log('descendingOrderItems',descendingOrderItems);
+        setFetchData([...descendingOrderItems]);
+    }
+    const [fetchData, setFetchData] = React.useState([]);
+    // setTimeout(() => {
+    //     console.log('fetchdata=======>',fetchData);
+    // }, 3000);
+    React.useEffect(() => {
+        let data = addPersonKey.length >= 0 ? addPersonKey.map(key => getData[key]) : null;
+        // setTimeout(() => {
+        // console.log('data=====>',data);
+
+        // }, 3000);
+        setFetchData([...data])
+    }, [getData])
+    // FILTER SECTIONS
+    const [filterIcon, setFilterIcon] = React.useState(true);
+    let filterIcons = filterIcon ? require('../../assets/images/up-arrow.png') : require('../../assets/images/down-arrow.png')
+
     return (
         <View style={styles.container}>
             {/* <View style={[styles.headerContainer, viewDetails && { marginVertical: 35 }]}> */}
-            <View style={[styles.headerContainer, viewDetails && addPersonKey.length > 0 ? { marginVertical: 35 } : null]}>
+            <View style={[styles.headerContainer, viewDetails && addPersonKey.length > 0 ? { marginVertical: 35 } : null || viewDetails && addPersonKey.length == 0 ? { marginVertical: 17 } : null]}>
                 <TouchableOpacity style={[styles.addPersonButton, addPerson && { backgroundColor: '#28C76F' }]}
                     onPress={() => {
                         // Alert.alert('Add Person');
@@ -924,38 +990,60 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                 </TouchableOpacity>
             </View>
             {/* ASCENDING ORDER FOR ALL DATA */}
-            {
-                viewDetails && addPersonKey.length > 0 ?
+            {/* { */}
+            {/* // viewDetails && addPersonKey.length > 0 ?
 
-                    <View style={styles.allDeleteImageContainer}>
-                        {/* <TouchableOpacity 
-                        // style={styles.allDeleteImage}
-                            // onPress={() => ascendingOrder()}
-                            > */}
-                        <Button title="Ascending Order"
+                //     <View style={styles.allDeleteImageContainer}>
+                        {/* <TouchableOpacity
+                            // style={styles.allDeleteImage}
+                            onPress={() => ascendingOrder()}
+                        > */}
+            {/* <Button title="Ascending Order"
                             onPress={() => ascendingOrder()}
                         />
-                        {/* <Image
+                        <Button title="Descending Order"
+                            onPress={() => descendingOrder()}
+                        /> */}
+            {/* <Image
                                 source={require('../../assets/images/all_delete_image.png')}
                                 style={styles.allDeleteItems}
                             /> */}
-                        {/* </TouchableOpacity> */}
-                    </View>
-                    :
-                    null
-            }
+            {/* </TouchableOpacity> */}
+            {/* // </View> */}
+            {/* // : */}
+            {/* // // null  */}
+            {/* // } */}
             {/* DELETE ALL DATA FROM FIREBASE */}
             {
                 viewDetails && addPersonKey.length > 0 ?
-
-                    <View style={styles.allDeleteImageContainer}>
-                        <TouchableOpacity style={styles.allDeleteImage}
-                            onPress={() => askQuestionWithAlert()}>
-                            <Image
-                                source={require('../../assets/images/all_delete_image.png')}
-                                style={styles.allDeleteItems}
-                            />
-                        </TouchableOpacity>
+                    <View style={styles.deleteAndFilterContainer}>
+                        <View style={styles.allDeleteImageContainer}>
+                            <TouchableOpacity style={styles.allDeleteImage}
+                                onPress={() => askQuestionWithAlert()}>
+                                <Image
+                                    source={require('../../assets/images/all_delete_image.png')}
+                                    style={styles.allDeleteItems}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.allDeleteImageContainer}>
+                            <TouchableOpacity style={styles.allDeleteImage}
+                                onPress={() => {
+                                    if (filterIcon) {
+                                        setFilterIcon(false);
+                                        ascendingOrder();
+                                    }
+                                    else {
+                                        setFilterIcon(true);
+                                        descendingOrder();
+                                    }
+                                }}>
+                                <Image
+                                    source={filterIcons}
+                                    style={styles.allDeleteItems}
+                                />
+                            </TouchableOpacity>
+                        </View>
                     </View>
                     :
                     null
@@ -995,7 +1083,6 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                 style={styles.addPersonRoomNoInputTextPicker}
                                 onValueChange={(itemValue, itemIndex) =>
                                     setSelectedRoomNo(itemValue)
-
                                 }
                                 onFocus={() => setFocus({ style2: !false })}
                             >
@@ -1215,7 +1302,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                     // console.log(text);
                                     // setRoomNo1(text);
                                     setRoomNo1(text);
-                                   
+
                                 }}
                                 onFocus={() => setFocus({ style6: !false })}
                                 style={styles.nameTextInput}
@@ -1280,7 +1367,6 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                 <ScrollView
                 //                 showsVerticalScrollIndicator={false}
                 //   showsHorizontalScrollIndicator={false}
-
                 >
                     {
                         loader ?
@@ -1289,21 +1375,38 @@ const HomeScreen = ({ navigation: { navigate } }) => {
                                 color="#00C0F0"
                             />
                             :
-                            addPersonKey.length >= 1 ? (
-                                addPersonKey.map(key => (
-                                    <AddItems
-                                        key={key}
-                                        id={key}
-                                        addItems={getData[key]}
+                            // addPersonKey.length >= 1 ? (
+                            //     addPersonKey.map(key => (
+                            //         <AddItems
+                            //             key={key}
+                            //             id={key}
+                            //             addItems={getData[key]}
+                            //         />
+                            //     ))
+                            // ) : (
+                            // <ActivityIndicator
+                            //     size={"large"}
+                            //     color="#00C0F0"
+                            // />
+                            // <Text>No Data</Text>
+                            // )
+                            // NOT NEED addPersonKey.length >= 1 BUT WHY I USED? BECAUSE I NEED SHOW EMPTY DATA IMAGE
+                            addPersonKey.length >= 1 ? (fetchData.map((item, i) => {
+                                return <AddItems
+                                    id={i}
+                                    addItems={item}
+                                />
+                            }))
+                                :
+                                <View style={styles.noDataContainer}>
+                                    <Image
+                                        source={require('../../assets/images/no_data1.png')}
+                                        style={{
+                                            width: 140,
+                                            height: 140,
+                                        }}
                                     />
-                                ))
-                            ) : (
-                                // <ActivityIndicator
-                                //     size={"large"}
-                                //     color="#00C0F0"
-                                // />
-                                <Text>No Data</Text>
-                            )
+                                </View>
                     }
                 </ScrollView>
             }
@@ -1728,6 +1831,10 @@ const styles = StyleSheet.create({
         right: 0,
         bottom: -10,
     },
+    deleteAndFilterContainer: {
+        flexDirection:'row-reverse',
+
+    },
     allDeleteImageContainer: {
         // backgroundColor: 'green',
         // marginVertical:2
@@ -1755,8 +1862,8 @@ const styles = StyleSheet.create({
         borderColor: 'black'
     },
     allDeleteItems: {
-        width: 22,
-        height: 22,
+        width: 20,
+        height: 20,
         // resizeMode:'cover'
         resizeMode: 'contain',
 
@@ -1923,5 +2030,24 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         fontSize: 17,
         color: '#121212',
-    }
+    },
+    noDataContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        // margin:30
+        marginVertical: 30,
+    },
+    noData: {
+        // fontFamily: 'Arial',
+        // fontStyle: 'normal',
+        // fontWeight: '500',
+        // fontSize: 17,
+        // color: '#121212',
+        // textAlign: 'center',
+        // width:windowWidth,
+        // height:windowHeight-30,
+        resizeMode: 'contain'
+
+    },
+
 })
