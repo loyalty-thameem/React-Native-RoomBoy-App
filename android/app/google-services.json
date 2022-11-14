@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "399119903726",
+    "firebase_url": "https://roomboy-8650a-default-rtdb.firebaseio.com",
+    "project_id": "roomboy-8650a",
+    "storage_bucket": "roomboy-8650a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:399119903726:android:262ee32d82b26d5160fcff",
+        "android_client_info": {
+          "package_name": "com.roomboy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "399119903726-0qn4umq691seliiurgtqpidvk3nj9vau.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.roomboy",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "399119903726-51vlje8agmd0t83ntuist3sohcmcnfgf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoiboubfuxGGEPJuogNWAazohGrgBtvCE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "399119903726-51vlje8agmd0t83ntuist3sohcmcnfgf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

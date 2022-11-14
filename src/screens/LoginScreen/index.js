@@ -4,7 +4,17 @@ import BouncyCheckbox from "react-native-bouncy-checkbox";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onValue, push, ref } from 'firebase/database';
 import { db } from '../Firebase/firebase-config';
+import auth from '@react-native-firebase/auth';
 
+import {
+    GoogleSignin,
+    GoogleSigninButton,
+    statusCodes,
+} from '@react-native-google-signin/google-signin';
+GoogleSignin.configure({
+    webClientId:
+        "399119903726-51vlje8agmd0t83ntuist3sohcmcnfgf.apps.googleusercontent.com", // client ID of type WEB for your server (needed to verify user ID and offline access)
+});
 const LoginScreen = ({ navigation: { navigate } }) => {
     const [checked, setChecked] = React.useState(false);
     // console.log('state checked', checked);
@@ -23,6 +33,244 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     const customStyle3 = !focus.style3 ? styles.textinputTextContainer1 : styles.textinputTextContainerFocus1;
     const customStyle4 = !focus.style4 ? styles.textinputTextContainer1 : styles.textinputTextContainerFocus1;
     const customStyle5 = !focus.style5 ? styles.textinputTextContainer1 : styles.textinputTextContainerFocus1;
+    //GOOGLE LOGIN
+
+    // function configureGoogleSign() {
+    //     GoogleSignin.configure({
+    //         scopes: ['https://www.googleapis.com/auth/drive.readonly'], // what API you want to access on behalf of the user, default is email and profile
+    //         webClientId: '399119903726-51vlje8agmd0t83ntuist3sohcmcnfgf.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
+    //         offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+    //         hostedDomain: '', // specifies a hosted domain restriction
+    //         forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
+    //         accountName: '', // [Android] specifies an account name on the device that should be used
+    //         iosClientId: '<FROM DEVELOPER CONSOLE>', // [iOS] if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
+    //         googleServicePlistPath: '', // [iOS] if you renamed your GoogleService-Info file, new name here, e.g. GoogleService-Info-Staging
+    //         openIdRealm: '', // [iOS] The OpenID2 realm of the home web server. This allows Google to include the user's OpenID Identifier in the OpenID Connect ID token.
+    //         profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
+    //     });
+    // }
+    // React.useEffect(() => {
+    //     GoogleSignin.configure({
+    //         scopes: ['email'], // what API you want to access on behalf of the user, default is email and profile
+    //         webClientId:
+    //             '399119903726-51vlje8agmd0t83ntuist3sohcmcnfgf.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
+    //         offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+    //     });
+    // }, []);
+    // React.useEffect(()=>{
+    //     GoogleSignin.configure({
+    //         webClientId:
+    //             '399119903726-51vlje8agmd0t83ntuist3sohcmcnfgf.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
+    //     });
+    // },[])
+    const [googleloggedIn, setGoogleloggedIn] = React.useState(false);
+    const [googleUserInfo, setGoogleUserInfo] = React.useState(null);
+    // setTimeout(() => {
+    //     console.log('goggleUserInfo',googleUserInfo);
+    //     console.log('goggleUserInfo',googleUserInfo.displayName);
+    //     console.log('goggleUserInfo',JSON.stringify(googleUserInfo.providerData));
+    // }, 4000);
+    const signIn = async () => {
+        try {
+            const { accessToken, idToken } = await GoogleSignin.signIn();
+            // console.log('GOOGLE SINGIN ACCESSTOKEN', accessToken)
+            // console.log('GOOGLE SINGIN idToken', idToken)
+            const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+            // console.log('googleCredential', googleCredential)
+            if (signupEmail !== 0) {
+                // setSignupEmail(userAuth.email)
+                // setSignupPassword(userAuth.email)
+                navigate('Home');
+                Alert.alert('Successfully registered!')
+                setChecked(false);
+                setUsername('');
+                setPassword('');
+                // setSignupEmail('')
+                // setSignupPassword('')
+                setSignupConfirmPassword('')
+                setIfSignIn(false);
+                setFocus({ style3: false });
+                setFocus({ style4: false });
+                setFocus({ style5: false });
+                storeUser();
+                getUserVal();
+                //FIREBASE STORE...
+                newUserData();
+            }
+            else {
+                Alert('else')
+            }
+            setSignupEmail('')
+            setSignupPassword('')
+            return auth().signInWithCredential(googleCredential);
+
+        } catch (error) {
+            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                // user cancelled the login flow
+                Alert.alert('Process Cancelled');
+            } else if (error.code === statusCodes.IN_PROGRESS) {
+                Alert.alert('Signin in progress');
+                // operation (f.e. sign in) is in progress already
+            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                Alert.alert('PLAY_SERVICES_NOT_AVAILABLE');
+                // play services not available or outdated
+            } else {
+                // some other error happened
+                Alert.alert('Something else went wrong... ', error.toString())
+                //     //   setError(error)
+
+            }
+        }
+
+    };
+    const onAuthStateChanged = async userAuth => {
+        if (!userAuth) {
+            return;
+        }
+        if (userAuth) {
+            console.log("userAuth=====>", userAuth);
+            setGoogleUserInfo(userAuth);
+            setSignupEmail(userAuth.email);
+            setSignupPassword(userAuth.email);
+            storeUser();
+            getUserVal();
+
+        }
+        setSignupEmail('')
+        setSignupPassword('')
+        return () => userReference();
+    };
+    React.useEffect(() => {
+        const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+        console.log('Useeffect subscriber', subscriber);
+        return () => {
+            subscriber;
+        };
+    }, []);
+    // const signOut = async () => {
+    //     auth().signOut();
+
+    //     setGoogleUserInfo(null);
+
+    //     return () => userReference();
+    //   };
+    // const signIn = async () => {
+    //     try {
+    //         await GoogleSignin.hasPlayServices();
+    //         const { accessToken, idToken } = await GoogleSignin.signIn();
+    //         console.log('GOOGLE SINGIN ACCESSTOKEN', accessToken)
+    //         console.log('GOOGLE SINGIN idToken', idToken)
+    //         setGoogleloggedIn(true);
+    //     } catch (error) {
+    //         if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+    //             // user cancelled the login flow
+    //             Alert.alert('Process Cancelled');
+    //         } else if (error.code === statusCodes.IN_PROGRESS) {
+    //             Alert.alert('Signin in progress');
+    //             // operation (f.e. sign in) is in progress already
+    //         } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+    //             Alert.alert('PLAY_SERVICES_NOT_AVAILABLE');
+    //             // play services not available or outdated
+    //         } else {
+    //             // some other error happened
+    //             Alert.alert('Something else went wrong... ', error.toString())
+    //             //     //   setError(error)
+
+    //         }
+    //     }
+    // };
+    // try {
+    //   await GoogleSignin.hasPlayServices();
+    //   const userInfo = await GoogleSignin.signIn();
+    //   console.log("userInfo",userInfo)
+    //   setGoogleLoginUserInfo(userInfo);
+    // } catch (error) {
+    //   if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+    //     // user cancelled the login flow
+    //     // Alert.alert('failed')
+    //   } else if (error.code === statusCodes.IN_PROGRESS) {
+    //     // Alert.alert('failed2')
+
+    //     // operation (e.g. sign in) is in progress already
+    //   } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+    //     // play services not available or outdated
+    //     // Alert.alert('failed3')
+
+    //   } else {
+    //     // some other error happened
+    //     // Alert.alert('failed4')
+
+    //   }
+    // }
+    // };
+    const [googleLoginGetUserInfo, setGoogleLoginGetUserInfo] = React.useState('');
+    console.log("Google googleLoginGetUserInfo login user info===>", googleLoginGetUserInfo)
+
+    const getCurrentUserInfo = async () => {
+        // try {
+        //   const userInfo = await GoogleSignin.signInSilently();
+        //   setGoogleLoginGetUserInfo(userInfo);
+        // } catch (error) {
+        //   if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+        //     // user has not signed in yet
+        //     Alert.alert('error SIGN_IN_REQUIRED')
+        //   } else {
+        //     // some other error
+        //     Alert.alert('error SIGN_IN_REQUIRED else')
+
+        //   }
+        // }
+        try {
+            const userInfo = await GoogleSignin.signInSilently()
+            console.log('userInfo get', userInfo);
+            setGoogleLoginGetUserInfo(userInfo)
+        } catch (error) {
+            if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+                // when user hasn't signed in yet
+                Alert.alert('Please Sign in')
+                //   setIsLoggedIn(false)
+            } else {
+                Alert.alert('Something else went wrong... ', error.toString())
+                //   setIsLoggedIn(false)
+            }
+        }
+    };
+
+    const isSignedIn = async () => {
+        const isSignedIn = await GoogleSignin.isSignedIn();
+        console.log('issignedIn', isSignedIn);
+        this.setState({ isLoginScreenPresented: !isSignedIn });
+    };
+    const getCurrentUser = async () => {
+        const currentUser = await GoogleSignin.getCurrentUser();
+        setGoogleLoginGetUserInfo(currentUser);
+    };
+    const signOut = async () => {
+        // try {
+        //     await GoogleSignin.signOut();
+        //     this.setState({ user: null }); // Remember to remove the user from your app's state as well
+        // } catch (error) {
+        //     console.error(error);
+        // }
+        try {
+            await GoogleSignin.revokeAccess();
+            await GoogleSignin.signOut();
+            setGoogleloggedIn(false);
+            setGoogleUserInfo([]);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    const revokeAccess = async () => {
+        try {
+            await GoogleSignin.revokeAccess();
+
+            // Google Account disconnected from your app.
+            // Perform clean-up actions, such as deleting data associated with the disconnected account.
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     // GET LOCALSTORAGE FOR VALIDATION PURPOSE...
     const [getUserName, setGetUserName] = React.useState([]);
@@ -84,7 +332,7 @@ const LoginScreen = ({ navigation: { navigate } }) => {
             Alert.alert(signupEmail + ' ' + 'is not a valid email address')
         }
         // FIREBASE CAN'T ACCEPTED @ AND . IN URL TYPE SO I REPLACED FOR @ AND .
-        else if (usernamedata === null || !usernamedata.includes(signupEmail.replace('@','AT').replace('.','DOT'))) {
+        else if (usernamedata === null || !usernamedata.includes(signupEmail.replace('@', 'AT').replace('.', 'DOT'))) {
             Alert.alert("Please register email doesn't exists")
         }
         else if (userpassworddata === null || !userpassworddata.includes(signupPassword)) {
@@ -123,8 +371,10 @@ const LoginScreen = ({ navigation: { navigate } }) => {
     //SIGNUP LOCALSTORAGE...
     const signupValue = {
         // FIREBASE CAN'T ACCEPTED @ AND . IN URL TYPE SO I REPLACED FOR @ AND .
-        signupEmail:signupEmail.replace('@','AT').replace('.','DOT'),
-        signupPassword
+        signupEmail: signupEmail.replace(/\@/gi, 'AT').replace(/\./gi, 'DOT'),
+        // signupPassword
+        // WHY I HIDE ABOVE LINE BECAUSE I USED TWO TYPES ONE IS NORMAL LOGIN ANOTHER ONE IS GOOGLE LOGIN
+        signupPassword: signupPassword.replace(/\@/gi, 'AT').replace(/\./gi, 'DOT')
     }
     const storeUser = async () => {
         try {
@@ -142,6 +392,8 @@ const LoginScreen = ({ navigation: { navigate } }) => {
         })
 
     }
+    // Google login after replace the email and password
+
     // GET FIREBASE STORE...
     const [userNameData, setUserNameData] = React.useState([]);
     console.log('UserNameData first ==>', userNameData);
@@ -539,13 +791,26 @@ const LoginScreen = ({ navigation: { navigate } }) => {
                                         source={require('../../assets/images/facebook_logo.jpg')}
                                     />
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.googleImageContainer}>
-                                    <Image
-                                        style={styles.googleImage}
-                                        source={require('../../assets/images/google_logo.png')}
-                                    />
+                                <TouchableOpacity style={styles.googleImageContainer}
+                                    onPress={() => {
+                                        !loginLoader ? null :
+                                            signIn()
+                                    }
+                                    }
+                                >
+                                    {
+                                        !loginLoader ?
+                                            <ActivityIndicator size={'large'} color="#00C0F0" />
+                                            :
+                                            <Image
+                                                style={styles.googleImage}
+                                                source={require('../../assets/images/google_logo.png')}
+                                            />
+                                    }
+
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.twitterImageContainer}>
+                                <TouchableOpacity style={styles.twitterImageContainer}
+                                    >
                                     <Image
                                         style={styles.twitterImage}
                                         source={require('../../assets/images/twitter_logo.png')}

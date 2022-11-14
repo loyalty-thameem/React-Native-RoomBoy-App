@@ -36,6 +36,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             setFetchImage(response[0].uri);
         } catch (err) {
             console.warn(err);
+            // Alert.alert('Please select image')
         }
     }, []);
     // DATE
@@ -505,7 +506,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
     const [userNameVal, setUserNameVal] = React.useState('')
     // const [userNameVal, setUserNameVal] = React.useState([]);
     // console.log('userNameVal', userNameVal.signupUsername+' '+userNameVal.signupPassword + userNameVal.password);
-    console.log("Usernamevalue=========>", userNameVal.signupEmail);
+    console.log("Usernamevalue userNameVal.signupEmail=========>", userNameVal.signupEmail);
     console.log("Usernamevalue=========>", userNameVal);
     React.useEffect(() => {
         getUserName();
@@ -521,7 +522,7 @@ const HomeScreen = ({ navigation: { navigate } }) => {
             setGetData(todoItems);
             setLoader(false);
         });
-    }, [userNameVal]);
+    }, [userNameVal,userNameVal.signupEmail]);
 
     const getUserName = async () => {
         try {
